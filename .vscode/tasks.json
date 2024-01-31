@@ -1,0 +1,31 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+        {
+            "label": "Build Solution",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/InnoShop.sln",
+                "/property:GenerateFullPaths=true"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Watch InnoShop.Presentation",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "--project",
+                "${workspaceFolder}/InnoShop.Presentation/InnoShop.Presentation.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
