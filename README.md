@@ -5,7 +5,22 @@
 The solution contains projects:
 * InnoShop.Presentation - contains Angular Project with frontend part of project
 
-## How to run:
+## 1. Setup
+
+This project needs some security keys to be set up so I wrote simple bash script to generate all nececcary data for project
+
+NOTE: If you using windows use GitBash, WSL, or MinGW to execute this script
+
+To run setup script just execute 
+
+```shell
+./setup.sh
+```
+
+And input all nececcary data or skip by pressing ENTER
+
+
+## 2. How to run:
 * ### From command line
 
   make sure that dotnet is installed properly and it is in $PATH environment variable

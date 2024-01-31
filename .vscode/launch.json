@@ -8,10 +8,24 @@
             "name": "Launch InnoShop.Presentation",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "Build Solution",
-            "program": "${workspaceFolder}/build/bin/InnoShop.Presentation/Debug/net7.0/",
+            "program": "./InnoShop.Presentation",
             "args": [],
             "cwd": "${workspaceFolder}/build/bin/InnoShop.Presentation/Debug/net7.0/",
+        },
+        {
+            "name": "Launch InnoShop.Infrastructure.UserManagerAPI",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build Solution",
+            "program": "./InnoShop.Infrastructure.UserManagerAPI",
+            "args": [],
+            "cwd": "${workspaceFolder}/build/bin/InnoShop.Infrastructure.UserManagerAPI/Debug/net8.0/",
+        },
+        {
+            "name": "Debug InnoShop.Infrastructure.UserManagerAPI",
+            "projectPath": "${workspaceFolder}/InnoShop.UserManagerAPI/InnoShop.Infrastructure.UserManagerAPI.csproj",
+            "type": "dotnet",
+            "request": "launch",
         }
     ]
 }
