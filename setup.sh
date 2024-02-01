@@ -40,10 +40,10 @@ if [ -z "$DB_ROOT_PASSWORD" ]; then
 fi
 
 if [ -z "$DB_USER" ]; then
-    echo "Enter database user name [user]:"
+    echo "Enter database user name [innoshop]:"
     read DB_USER
     if [ -z "$DB_USER" ]; then
-        DB_USER="user"
+        DB_USER="innoshop"
     fi
     echo "DB_USER=\"$DB_USER\"" >> "$CACHE_FILE"
 fi
@@ -64,16 +64,19 @@ dotnet user-secrets init --project InnoShop.ProductManagerAPI --id "$SECRETS_ID"
 # set secrets content
 cat <<EOF | dotnet user-secrets set --id "$SECRETS_ID"
 {
-  "ConnectionStrings": {
-    "DefaultConnection": "server=localhost;user=$DB_USER;password=$DB_PASSWORD;"
-  },
+  "Database:User": "$DB_USER",
+  "Database:Password": "$DB_PASSWORD",
   "JwtSecurityKey": "$SECURITY_KEY"
 }
 EOF
 
 # write same passwords into database.env file
 cat <<EOF | tee "$DATABASE_FILE"
-MYSQL_ROOT_PASSWORD=$DB_ROOT_PASSWORD
-MYSQL_USER=$DB_USER
-MYSQL_PASSWORD=$DB_PASSWORD
+POSTGRES_PASSWORD=$DB_ROOT_PASSWORD
+EOF
+
+
+cat <<EOF | tee "./database/init.d/innoshop_user.env"
+DB_USER="$DB_USER"
+DB_USER_PASSWORD="$DB_PASSWORD"
 EOF
