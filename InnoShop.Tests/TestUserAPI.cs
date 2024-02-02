@@ -1,16 +1,8 @@
 using InnoShop.Application.Shared.Auth;
-using InnoShop.Domain;
 using InnoShop.Infrastructure.UserManagerAPI;
 using InnoShop.Infrastructure.UserManagerAPI.Data;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using InnoShop.Application.Shared;
-using Microsoft.Extensions.Hosting;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Hosting;
@@ -22,16 +14,10 @@ public class TestUserAPI {
     WebApplicationFactory<Program> webApp;
     HttpClient client;
 
-    public static string RandomString(int length) {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[Random.Shared.Next(s.Length)]).ToArray());
-    }
 
     [SetUp]
     public void SetupAsync() {
-        webApp = new CustomWebApplicationFactory<Program>();
-
+        webApp = new TestWebApplicationFactory<Program>();
         client = webApp.CreateClient();
     }
 
@@ -68,6 +54,17 @@ public class TestUserAPI {
         Assert.That(!result.IsSuccessStatusCode);
     }
 
+    [Test]
+    public async Task LoginPositiveTest() {
+        var userCredentials = new UserCredentials("waffle@example.com", "WAFFLE", "IL0veC4eese");
+
+        var result = await RegisterUser(userCredentials);
+        Assert.That(result.IsSuccessStatusCode);
+
+        result = await LoginUser(userCredentials);
+        Assert.That(result.IsSuccessStatusCode);
+    }
+
     private async Task<HttpResponseMessage> RegisterUser(UserCredentials credentials) {
         return await client.PostAsJsonAsync("api/accounts/register", new RegisterDto {
             Email = credentials.email,
@@ -75,29 +72,56 @@ public class TestUserAPI {
             Password = credentials.password,
         });
     }
+
+    private async Task<HttpResponseMessage> LoginUser(UserCredentials credentials) {
+        return await client.PostAsJsonAsync("api/accounts/login", new LoginDto {
+            Login = credentials.username,
+            Password = credentials.password,
+        });
+    }
 }
 
 record UserCredentials(string email, string username, string password);
 
-public class CustomWebApplicationFactory<TProgram>
+public class TestWebApplicationFactory<TProgram>
     : WebApplicationFactory<TProgram> where TProgram : class {
+    public readonly static string ConnectionString = "Data Source=TestDb.db";
+
     protected override void ConfigureWebHost(IWebHostBuilder builder) {
         builder.ConfigureServices(services => {
             var dbContextDescriptor = services.SingleOrDefault(
-                d => d.ServiceType ==
-                    typeof(DbContextOptions<ApplicationDbContext>));
+                d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
             if (dbContextDescriptor is not null)
                 services.Remove(dbContextDescriptor);
 
             var dbConnectionDescriptor = services.SingleOrDefault(
-                d => d.ServiceType ==
-                    typeof(DbConnection));
+                d => d.ServiceType == typeof(DbConnection));
             if (dbConnectionDescriptor is not null)
                 services.Remove(dbConnectionDescriptor);
 
-            services.AddDbContext<ApplicationDbContext>((container, options) => {
-                options.UseInMemoryDatabase("InnoShopTest");
+            services.AddDbContext<ApplicationDbContext>(options => {
+                options.UseSqlite(ConnectionString);
             });
+
+            MigrateDbContext<ApplicationDbContext>(services);
         });
+    }
+
+    public void MigrateDbContext<TContext>(IServiceCollection serviceCollection) where TContext : DbContext {
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+
+        using var scope = serviceProvider.CreateScope();
+
+        var services = scope.ServiceProvider;
+        var context = services.GetService<TContext>();
+
+        if (context?.Database.IsNpgsql() ?? true) {
+            throw new Exception("Use Sqlite instead of sql server!");
+        }
+
+        context.Database.EnsureDeleted();
+
+        context.Database.Migrate();
+
     }
 }

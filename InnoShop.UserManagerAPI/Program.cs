@@ -10,6 +10,7 @@ namespace InnoShop.Infrastructure.UserManagerAPI;
 
 public class Program {
     private static void Main(string[] args) {
+        
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddEndpointsApiExplorer();
