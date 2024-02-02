@@ -6,64 +6,66 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace InnoShop.Infrastructure.UserManagerAPI;
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+public class Program {
+    private static void Main(string[] args) {
+        var builder = WebApplication.CreateBuilder(args);
 
-var config = new {
-    database_host = builder.Configuration["Database:Host"] ?? "localhost",
-    database_port = builder.Configuration["Database:Port"] ?? "5432",
-    database_user = builder.Configuration.GetOrThrow("Database:User"),
-    database_password = builder.Configuration.GetOrThrow("Database:Password"),
-    jwtIssuer = builder.Configuration.GetOrThrow("JwtIssuer"),
-    jwtAudience = builder.Configuration.GetOrThrow("JwtAudience"),
-    jwtSecurityKey = builder.Configuration.GetOrThrow("JwtSecurityKey"),
-};
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql($"Host={config.database_host};Port={config.database_port};Username={config.database_user};Password={config.database_password};Database=innoshop_users;"));
-
-builder.Services.AddDefaultIdentity<ShopUser>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-
-builder.Services.Configure<IdentityOptions>(options => {
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 8;
-    options.Password.RequiredUniqueChars = 1;
-});
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options => {
-        options.TokenValidationParameters = new TokenValidationParameters {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = config.jwtIssuer,
-            ValidAudience = config.jwtAudience,
-            IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(config.jwtSecurityKey))
+        var config = new {
+            database_host = builder.Configuration["Database:Host"] ?? "localhost",
+            database_port = builder.Configuration["Database:Port"] ?? "5432",
+            database_user = builder.Configuration.GetOrThrow("Database:User"),
+            database_password = builder.Configuration.GetOrThrow("Database:Password"),
+            jwtIssuer = builder.Configuration.GetOrThrow("JwtIssuer"),
+            jwtAudience = builder.Configuration.GetOrThrow("JwtAudience"),
+            jwtSecurityKey = builder.Configuration.GetOrThrow("JwtSecurityKey"),
         };
-    });
 
-var app = builder.Build();
+        builder.Services.AddControllersWithViews();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment()) {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql($"Host={config.database_host};Port={config.database_port};Username={config.database_user};Password={config.database_password};Database=innoshop_users;"));
+
+        builder.Services.AddDefaultIdentity<ShopUser>()
+            .AddEntityFrameworkStores<ApplicationDbContext>();
+
+        builder.Services.Configure<IdentityOptions>(options => {
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = true;
+            options.Password.RequiredLength = 8;
+            options.Password.RequiredUniqueChars = 1;
+        });
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options => {
+                options.TokenValidationParameters = new TokenValidationParameters {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = config.jwtIssuer,
+                    ValidAudience = config.jwtAudience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(config.jwtSecurityKey))
+                };
+            });
+
+        var app = builder.Build();
+
+        if (app.Environment.IsDevelopment()) {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseRouting();
+        app.MapDefaultControllerRoute();
+
+        app.UseHttpsRedirection();
+        app.Run();
+    }
 }
-
-app.UseRouting();
-app.MapDefaultControllerRoute();
-
-app.UseHttpsRedirection();
-app.Run();

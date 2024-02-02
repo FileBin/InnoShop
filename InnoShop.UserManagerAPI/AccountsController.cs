@@ -13,38 +13,40 @@ namespace InnoShop.Infrastructure.UserManagerAPI;
 [ApiController]
 [Route("api/accounts")]
 public class AccountsController : ControllerBase {
-    private readonly IConfiguration configuration;
-    private readonly SignInManager<ShopUser> signInManager;
-    private readonly UserManager<ShopUser> userManager;
+    private readonly IConfiguration Configuration;
+    private readonly SignInManager<ShopUser> SignInManager;
+    private readonly UserManager<ShopUser> UserManager;
 
-    private readonly SymmetricSecurityKey jwtSecurityKey;
+    private readonly SymmetricSecurityKey JwtSecurityKey;
 
     public AccountsController(IConfiguration configuration, SignInManager<ShopUser> signInManager, UserManager<ShopUser> userManager) {
-        this.userManager = userManager;
-        this.configuration = configuration;
-        this.signInManager = signInManager;
-        jwtSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetOrThrow("JwtSecurityKey")));
+        UserManager = userManager;
+        Configuration = configuration;
+        SignInManager = signInManager;
+        JwtSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetOrThrow("JwtSecurityKey")));
     }
 
     [HttpPost]
     [Route("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto) {
-        //TODO: try find username by email
         var username = dto.Login;
         var password = dto.Password;
-        var result = await signInManager.PasswordSignInAsync(username, password, false, false);
-        if (!result.Succeeded) return BadRequest(new LoginResult { IsSuccessful = false, Message = "Username and password are invalid." });
+        var result = await SignInManager.PasswordSignInAsync(username, password, false, false);
+        
+        if (!result.Succeeded) {
+            return BadRequest(new LoginResult { IsSuccessful = false, Message = "Username and password are invalid." });
+        }
 
         var claims = new[] {
             new Claim(ClaimTypes.Name, username)
         };
 
-        var creds = new SigningCredentials(jwtSecurityKey, SecurityAlgorithms.HmacSha256);
-        var expiry = DateTime.Now.AddDays(Convert.ToInt32(configuration.GetOrThrow("JwtExpiryInDays")));
+        var creds = new SigningCredentials(JwtSecurityKey, SecurityAlgorithms.HmacSha256);
+        var expiry = DateTime.Now.AddDays(Convert.ToInt32(Configuration.GetOrThrow("JwtExpiryInDays")));
 
         var token = new JwtSecurityToken(
-            configuration.GetOrThrow("JwtIssuer"),
-            configuration.GetOrThrow("JwtAudience"),
+            Configuration.GetOrThrow("JwtIssuer"),
+            Configuration.GetOrThrow("JwtAudience"),
             claims,
             expires: expiry,
             signingCredentials: creds
@@ -64,11 +66,11 @@ public class AccountsController : ControllerBase {
         var newUser = new ShopUser { UserName = dto.Username, Email = dto.Email };
         var password = dto.Password;
 
-        var result = await userManager.CreateAsync(newUser, password);
+        var result = await UserManager.CreateAsync(newUser, password);
 
         if (!result.Succeeded) {
             var errors = result.Errors.Select(x => x.Description).Aggregate((x, y) => $"{x}\n{y}");
-            return Ok(new RegisterResult { IsSuccessful = false, Message = errors });
+            return BadRequest(new RegisterResult { IsSuccessful = false, Message = errors });
         }
 
         return Ok(new RegisterResult { IsSuccessful = true });

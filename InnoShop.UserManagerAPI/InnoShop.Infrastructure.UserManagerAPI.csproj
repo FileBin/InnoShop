@@ -8,11 +8,6 @@
     <UserSecretsId>83662ac2-9052-4921-a68e-3d377412bbd6</UserSecretsId>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <BaseOutputPath>$(MSBuildThisFileDirectory)/.build/bin/</BaseOutputPath>
-    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)/.build/obj/</BaseIntermediateOutputPath>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.1" />
