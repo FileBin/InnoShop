@@ -28,4 +28,8 @@
     <ProjectReference Include="..\InnoShop.Application.Shared\InnoShop.Application.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="TestUserAPI/Tests/" />
+  </ItemGroup>
+
 </Project>

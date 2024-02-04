@@ -8,80 +8,41 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Hosting;
 using System.Data.Common;
 
-namespace InnoShop.Tests;
+namespace InnoShop.Tests.TestUserAPI;
 
-public class TestUserAPI {
+public class TestSetupApi {
     WebApplicationFactory<Program> webApp;
     HttpClient client;
 
 
     [SetUp]
-    public void SetupAsync() {
+    public virtual Task SetupAsync() {
         webApp = new TestWebApplicationFactory<Program>();
         client = webApp.CreateClient();
+        return Task.CompletedTask;
     }
 
     [TearDown]
-    public void Cleanup() {
+    public virtual void Cleanup() {
         client.Dispose();
         webApp.Dispose();
     }
 
-    [Test]
-    public async Task RegisterPositiveTest() {
-        var userCredentials = new UserCredentials("waffle@example.com", "onionWaffle", "IL0veC4eese");
-
-        var result = await RegisterUser(userCredentials);
-
-        Assert.That(result.IsSuccessStatusCode);
-    }
-
-    [Test]
-    public async Task RegisterNegativeTestEmptyUsername() {
-        var userCredentials = new UserCredentials("sus", "", "IL0veC4eese");
-
-        var result = await RegisterUser(userCredentials);
-
-        Assert.That(!result.IsSuccessStatusCode);
-    }
-
-    [Test]
-    public async Task RegisterNegativeTestShortPassword() {
-        var userCredentials = new UserCredentials("sus", "abc", "abc");
-
-        var result = await RegisterUser(userCredentials);
-
-        Assert.That(!result.IsSuccessStatusCode);
-    }
-
-    [Test]
-    public async Task LoginPositiveTest() {
-        var userCredentials = new UserCredentials("waffle@example.com", "WAFFLE", "IL0veC4eese");
-
-        var result = await RegisterUser(userCredentials);
-        Assert.That(result.IsSuccessStatusCode);
-
-        result = await LoginUser(userCredentials);
-        Assert.That(result.IsSuccessStatusCode);
-    }
-
-    private async Task<HttpResponseMessage> RegisterUser(UserCredentials credentials) {
+    protected async Task<HttpResponseMessage> RegisterUser(UserCredentials credentials) {
         return await client.PostAsJsonAsync("api/accounts/register", new RegisterDto {
-            Email = credentials.email,
-            Username = credentials.username,
-            Password = credentials.password,
+            Email = credentials.Email,
+            Username = credentials.Username,
+            Password = credentials.Password,
         });
     }
 
-    private async Task<HttpResponseMessage> LoginUser(UserCredentials credentials) {
+    protected async Task<HttpResponseMessage> LoginUser(UserCredentials credentials) {
         return await client.PostAsJsonAsync("api/accounts/login", new LoginDto {
-            Login = credentials.username,
-            Password = credentials.password,
+            Login = credentials.Username,
+            Password = credentials.Password,
         });
     }
 }
-
-record UserCredentials(string email, string username, string password);
 
 public class TestWebApplicationFactory<TProgram>
     : WebApplicationFactory<TProgram> where TProgram : class {
