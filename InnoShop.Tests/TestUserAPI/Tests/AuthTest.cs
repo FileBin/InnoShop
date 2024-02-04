@@ -4,7 +4,7 @@ namespace InnoShop.Tests.TestUserAPI;
 
 public class AuthTest : TestSetupApi {
     [Test]
-    public async Task UserInfo() {
+    public async Task UserInfoGet() {
         var userCredentials = new UserCredentials {
             Email = "waffle@example.com",
             Username = "waffle",
@@ -27,5 +27,21 @@ public class AuthTest : TestSetupApi {
         Assert.That(userInfo.Username, Is.EqualTo(userCredentials.Username));
         Assert.That(userInfo.Email, Is.EqualTo(userCredentials.Email));
     }
+
+    [Test]
+    public async Task UserInfoUnathorized() {
+        var userCredentials = new UserCredentials {
+            Email = "waffle@example.com",
+            Username = "waffle",
+            Password = TestPasswordGenerator.GenerateRandomPassword()
+        };
+
+        var result = await RegisterUser(userCredentials);
+        Assert.That(result.IsSuccessStatusCode);
+
+        result = await GetUserInfo();
+        Assert.That(!result.IsSuccessStatusCode);
+    }
+
 
 }
