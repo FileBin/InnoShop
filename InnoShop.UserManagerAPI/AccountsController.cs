@@ -4,6 +4,7 @@ using System.Text;
 using InnoShop.Application.Shared;
 using InnoShop.Application.Shared.Auth;
 using InnoShop.Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -12,6 +13,7 @@ namespace InnoShop.Infrastructure.UserManagerAPI;
 
 [ApiController]
 [Route("api/accounts")]
+[Authorize]
 public class AccountsController : ControllerBase {
     private readonly IConfiguration Configuration;
     private readonly SignInManager<ShopUser> SignInManager;
@@ -28,17 +30,32 @@ public class AccountsController : ControllerBase {
 
     [HttpPost]
     [Route("login")]
+    [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginDto dto) {
         var username = dto.Login;
         var password = dto.Password;
         var result = await SignInManager.PasswordSignInAsync(username, password, false, false);
-        
+
         if (!result.Succeeded) {
             return BadRequest(new LoginResult { IsSuccessful = false, Message = "Username and password are invalid." });
         }
 
+        var user = await UserManager.FindByNameAsync(username);
+
+        if (user is null) {
+            return BadRequest(
+                new LoginResult {
+                    IsSuccessful = false,
+                    Message = "Something went wrong.\n"
+                            + "Login was succesful,"
+                            + "but your userID wasn't found"
+                }
+            );
+        }
+
         var claims = new[] {
-            new Claim(ClaimTypes.Name, username)
+            new Claim(ClaimTypes.Name, user.UserName ?? Misc.NullMarker),
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
         };
 
         var creds = new SigningCredentials(JwtSecurityKey, SecurityAlgorithms.HmacSha256);
@@ -62,6 +79,7 @@ public class AccountsController : ControllerBase {
 
     [HttpPost]
     [Route("register")]
+    [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto) {
         var newUser = new ShopUser { UserName = dto.Username, Email = dto.Email };
         var password = dto.Password;
@@ -70,9 +88,27 @@ public class AccountsController : ControllerBase {
 
         if (!result.Succeeded) {
             var errors = result.Errors.Select(x => x.Description).Aggregate((x, y) => $"{x}\n{y}");
-            return BadRequest(new RegisterResult { IsSuccessful = false, Message = errors });
+            return BadRequest(new BaseResult { IsSuccessful = false, Message = errors });
         }
 
-        return Ok(new RegisterResult { IsSuccessful = true });
+        return Ok(new BaseResult { IsSuccessful = true });
+    }
+
+    [HttpGet]
+    [Route("info")]
+    public async Task<IActionResult> GetInfo() {
+        var user = await UserManager.GetUserAsync(User);
+
+        if (user is null) {
+            return BadRequest(new BaseResult {
+                IsSuccessful = false,
+                Message = "Error When getting user",
+            });
+        }
+
+        return Ok(new UserInfoDto {
+            Email = user.Email ?? Misc.NullMarker,
+            Username = user.UserName ?? Misc.NullMarker,
+        });
     }
 }

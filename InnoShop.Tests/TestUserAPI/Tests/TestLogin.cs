@@ -1,4 +1,7 @@
-﻿namespace InnoShop.Tests.TestUserAPI;
+﻿using InnoShop.Application.Shared.Auth;
+using Newtonsoft.Json;
+
+namespace InnoShop.Tests.TestUserAPI;
 
 [TestFixture]
 public class TestLogin : TestSetupApi {
@@ -17,7 +20,7 @@ public class TestLogin : TestSetupApi {
         var result = await RegisterUser(userCredentials);
         Assert.That(result.IsSuccessStatusCode);
     }
-    
+
     [Test]
     public async Task ValidParamenters() {
         var result = await LoginUser(userCredentials);

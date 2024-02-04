@@ -7,12 +7,15 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Hosting;
 using System.Data.Common;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace InnoShop.Tests.TestUserAPI;
 
 public class TestSetupApi {
     WebApplicationFactory<Program> webApp;
-    HttpClient client;
+    protected HttpClient client;
 
 
     [SetUp]
@@ -41,6 +44,25 @@ public class TestSetupApi {
             Login = credentials.Username,
             Password = credentials.Password,
         });
+    }
+
+    protected async Task<HttpResponseMessage> GetUserInfo(string? jwtToken = null) {
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, "api/accounts/info")) {
+            if (jwtToken is not null) {
+                requestMessage.Headers.Authorization =
+                    new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, jwtToken);
+            }
+            return await client.SendAsync(requestMessage);
+        }
+    }
+
+    protected async Task<T> GetJsonContent<T>(HttpResponseMessage response) {
+        var jsonString = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<T>(jsonString);
+        if (result is not null)
+            return result;
+
+        throw new JsonSerializationException($"Cannot convert {jsonString} to type {typeof(T).FullName}");
     }
 }
 

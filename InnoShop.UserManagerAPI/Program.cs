@@ -1,3 +1,4 @@
+using System.Text;
 using InnoShop.Application.Shared;
 using InnoShop.Domain;
 using InnoShop.Infrastructure.UserManagerAPI.Data;
@@ -5,16 +6,45 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 namespace InnoShop.Infrastructure.UserManagerAPI;
 
 public class Program {
     private static void Main(string[] args) {
-        
+
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+
+        builder.Services.ConfigureSwaggerGen(options => {
+            options.AddSecurityDefinition(
+                JwtBearerDefaults.AuthenticationScheme,
+                new OpenApiSecurityScheme {
+                    Name = "Authorization",
+                    Description = "Please provide a valid token",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme
+                });
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement() {
+                {
+                    new OpenApiSecurityScheme {
+                        Reference = new OpenApiReference {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        },
+                        Scheme = "oauth2",
+                        Name = "Bearer",
+                        In = ParameterLocation.Header,
+                    },
+                    Array.Empty<string>()
+                }
+            });
+        });
 
         var config = new {
             database_host = builder.Configuration["Database:Host"] ?? "localhost",
@@ -29,7 +59,11 @@ public class Program {
         builder.Services.AddControllersWithViews();
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql($"Host={config.database_host};Port={config.database_port};Username={config.database_user};Password={config.database_password};Database=innoshop_users;"));
+            options.UseNpgsql($"Host={config.database_host};"
+                            + $"Port={config.database_port};"
+                            + $"Username={config.database_user};"
+                            + $"Password={config.database_password};"
+                            + $"Database=innoshop_users;"));
 
         builder.Services.AddDefaultIdentity<ShopUser>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -43,18 +77,26 @@ public class Program {
             options.Password.RequiredUniqueChars = 1;
         });
 
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options => {
-                options.TokenValidationParameters = new TokenValidationParameters {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = config.jwtIssuer,
-                    ValidAudience = config.jwtAudience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(config.jwtSecurityKey))
-                };
-            });
+        builder.Services.AddAuthorization();
+
+        builder.Services.AddAuthentication(options => {
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options => {
+            options.RequireHttpsMetadata = false;
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = config.jwtIssuer,
+                ValidAudience = config.jwtAudience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.jwtSecurityKey))
+            };
+        });
 
         var app = builder.Build();
 
@@ -63,10 +105,13 @@ public class Program {
             app.UseSwaggerUI();
         }
 
-        app.UseRouting();
-        app.MapDefaultControllerRoute();
-
         app.UseHttpsRedirection();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.MapControllers();
+
         app.Run();
     }
 }
