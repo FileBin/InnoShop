@@ -1,31 +1,123 @@
+using System.Text;
 using InnoShop.Application.Shared;
+using InnoShop.Domain;
+using InnoShop.Domain.Services;
+using InnoShop.Infrastructure.UserManagerAPI.Data;
+using InnoShop.Infrastructure.UserManagerAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace InnoShop.Infrastructure.UserManagerAPI;
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+public class Program {
+    private static void Main(string[] args) {
 
-var defaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        var builder = WebApplication.CreateBuilder(args);
 
-var config = new {
-    connectionString = $"{defaultConnectionString};database=InnoShop.Users",
-    jwtIssuer = builder.Configuration.GetOrThrow("JwtIssuer"),
-    jwtAudience = builder.Configuration.GetOrThrow("JwtAudience"),
-    jwtSecurityKey = builder.Configuration.GetOrThrow("JwtSecurityKey"),
-};
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+        builder.Services.ConfigureSwaggerGen(options => {
+            options.AddSecurityDefinition(
+                JwtBearerDefaults.AuthenticationScheme,
+                new OpenApiSecurityScheme {
+                    Name = "Authorization",
+                    Description = "Please provide a valid token",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme
+                });
 
-var app = builder.Build();
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement() {
+                {
+                    new OpenApiSecurityScheme {
+                        Reference = new OpenApiReference {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        },
+                        Scheme = "oauth2",
+                        Name = "Bearer",
+                        In = ParameterLocation.Header,
+                    },
+                    Array.Empty<string>()
+                }
+            });
+        });
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment()) {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+        var config = new {
+            database_host = builder.Configuration["Database:Host"] ?? "localhost",
+            database_port = builder.Configuration["Database:Port"] ?? "5432",
+            database_user = builder.Configuration.GetOrThrow("Database:User"),
+            database_password = builder.Configuration.GetOrThrow("Database:Password"),
+            jwtIssuer = builder.Configuration.GetOrThrow("JwtIssuer"),
+            jwtAudience = builder.Configuration.GetOrThrow("JwtAudience"),
+            jwtSecurityKey = builder.Configuration.GetOrThrow("JwtSecurityKey"),
+        };
+
+        builder.Services.AddControllersWithViews();
+
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql($"Host={config.database_host};"
+                            + $"Port={config.database_port};"
+                            + $"Username={config.database_user};"
+                            + $"Password={config.database_password};"
+                            + $"Database=innoshop_users;"));
+
+        builder.Services.AddDefaultIdentity<ShopUser>()
+            .AddEntityFrameworkStores<ApplicationDbContext>();
+
+        builder.Services.Configure<IdentityOptions>(options => {
+            options.SignIn.RequireConfirmedEmail = true;
+
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = true;
+            options.Password.RequiredLength = 8;
+            options.Password.RequiredUniqueChars = 1;
+        });
+
+        builder.Services.AddAuthorization();
+
+        builder.Services.AddAuthentication(options => {
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options => {
+            options.RequireHttpsMetadata = false;
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = config.jwtIssuer,
+                ValidAudience = config.jwtAudience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.jwtSecurityKey))
+            };
+        });
+
+        builder.Services.AddScoped<IConfirmationMailService, MailService>();
+
+        var app = builder.Build();
+
+        if (app.Environment.IsDevelopment()) {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirection();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        app.Run();
+    }
 }
-
-app.UseHttpsRedirection();
-app.Run();

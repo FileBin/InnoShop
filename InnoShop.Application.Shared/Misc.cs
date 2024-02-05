@@ -3,6 +3,8 @@
 namespace InnoShop.Application.Shared;
 
 public static class Misc {
+
+    public static readonly string NullMarker = "(null)";
     public static string GetOrThrow(this IConfiguration config, string key) {
         var val = config[key];
         if (val is null) {

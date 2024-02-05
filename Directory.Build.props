@@ -4,11 +4,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <BaseOutputPath>$(MSBuildThisFileDirectory)/build/bin/$(MSBuildProjectName)</BaseOutputPath>
-    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)/build/obj/$(MSBuildProjectName)</BaseIntermediateOutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>    
+    <BaseOutputPath>.build/bin/</BaseOutputPath>
+    <BaseIntermediateOutputPath>.build/obj/</BaseIntermediateOutputPath>
   </PropertyGroup>
 </Project>
