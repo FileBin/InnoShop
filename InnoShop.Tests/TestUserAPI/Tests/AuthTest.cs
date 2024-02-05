@@ -4,7 +4,8 @@ namespace InnoShop.Tests.TestUserAPI;
 
 public class AuthTest : TestSetupApi {
     [Test]
-    public async Task UserInfoGet() {
+    [CancelAfter(10_000)]
+    public async Task UserInfoGet(CancellationToken cancellationToken) {
         var userCredentials = new UserCredentials {
             Email = "waffle@example.com",
             Username = "waffle",
@@ -13,6 +14,8 @@ public class AuthTest : TestSetupApi {
 
         var result = await RegisterUser(userCredentials);
         Assert.That(result.IsSuccessStatusCode);
+        
+        await VerifyEmail(cancellationToken);
         
         result = await LoginUser(userCredentials);
         Assert.That(result.IsSuccessStatusCode);
@@ -29,7 +32,8 @@ public class AuthTest : TestSetupApi {
     }
 
     [Test]
-    public async Task UserInfoUnathorized() {
+    [CancelAfter(10_000)]
+    public async Task UserInfoUnathorized(CancellationToken cancellationToken) {
         var userCredentials = new UserCredentials {
             Email = "waffle@example.com",
             Username = "waffle",

@@ -1,5 +1,5 @@
-﻿using InnoShop.Application.Shared.Auth;
-using Newtonsoft.Json;
+﻿using System.Net.Mail;
+using System.Text.RegularExpressions;
 
 namespace InnoShop.Tests.TestUserAPI;
 
@@ -22,7 +22,9 @@ public class TestLogin : TestSetupApi {
     }
 
     [Test]
-    public async Task ValidParamenters() {
+    [CancelAfter(10_000)]
+    public async Task ValidParamenters(CancellationToken cancellationToken) {
+        await VerifyEmail(cancellationToken);
         var result = await LoginUser(userCredentials);
         Assert.That(result.IsSuccessStatusCode);
     }

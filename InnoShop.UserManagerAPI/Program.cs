@@ -1,7 +1,9 @@
 using System.Text;
 using InnoShop.Application.Shared;
 using InnoShop.Domain;
+using InnoShop.Domain.Services;
 using InnoShop.Infrastructure.UserManagerAPI.Data;
+using InnoShop.Infrastructure.UserManagerAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -69,6 +71,8 @@ public class Program {
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
         builder.Services.Configure<IdentityOptions>(options => {
+            options.SignIn.RequireConfirmedEmail = true;
+
             options.Password.RequireDigit = true;
             options.Password.RequireLowercase = true;
             options.Password.RequireNonAlphanumeric = false;
@@ -97,6 +101,8 @@ public class Program {
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.jwtSecurityKey))
             };
         });
+
+        builder.Services.AddScoped<IConfirmationMailService, MailService>();
 
         var app = builder.Build();
 

@@ -57,6 +57,18 @@ if [ -z "$DB_PASSWORD" ]; then
     echo "DB_PASSWORD=\"$DB_PASSWORD\"" >> "$CACHE_FILE"
 fi
 
+if [ -z "$SMTP_USER" ]; then
+    echo "Enter SMTP user (or email):"
+    read SMTP_USER
+    echo "SMTP_USER=\"$SMTP_USER\"" >> "$CACHE_FILE"
+fi
+
+if [ -z "$SMTP_PASSWORD" ]; then
+    echo "Enter SMTP user password:"
+    read SMTP_PASSWORD
+    echo "SMTP_PASSWORD=\"$SMTP_PASSWORD\"" >> "$CACHE_FILE"
+fi
+
 # init same secrets for both projects
 dotnet user-secrets init --project InnoShop.UserManagerAPI --id "$SECRETS_ID"
 dotnet user-secrets init --project InnoShop.ProductManagerAPI --id "$SECRETS_ID"
@@ -66,7 +78,9 @@ cat <<EOF | dotnet user-secrets set --id "$SECRETS_ID"
 {
   "Database:User": "$DB_USER",
   "Database:Password": "$DB_PASSWORD",
-  "JwtSecurityKey": "$SECURITY_KEY"
+  "JwtSecurityKey": "$SECURITY_KEY",
+  "SMTP:User": "$SMTP_USER",
+  "SMTP:Password": "$SMTP_PASSWORD"
 }
 EOF
 

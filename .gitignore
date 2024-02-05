@@ -1,4 +1,6 @@
 /build
+obj
+bin
 .private
 .build
 database/init.d/*.env
