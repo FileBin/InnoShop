@@ -1,5 +1,4 @@
 using System.Text;
-using InnoShop.Application.Shared;
 using InnoShop.Domain;
 using InnoShop.Domain.Services;
 using InnoShop.Infrastructure.UserManagerAPI.Data;
@@ -9,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using InnoShop.Application.Shared.Misc;
+using InnoShop.Application;
 
 namespace InnoShop.Infrastructure.UserManagerAPI;
 
@@ -19,6 +20,8 @@ public class Program {
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+
+        builder.Services.AddApplicationServices();
 
         builder.Services.ConfigureSwaggerGen(options => {
             options.AddSecurityDefinition(

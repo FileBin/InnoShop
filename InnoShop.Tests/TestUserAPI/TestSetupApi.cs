@@ -1,10 +1,10 @@
-using InnoShop.Application.Shared.Auth;
 using InnoShop.Infrastructure.UserManagerAPI;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Net.Mail;
+using InnoShop.Application.Shared.Models.Auth;
 
 namespace InnoShop.Tests.TestUserAPI;
 

@@ -1,4 +1,4 @@
-﻿namespace InnoShop.Application.Shared.Auth;
+﻿namespace InnoShop.Application.Shared.Models.Auth;
 
 public class RegisterDto {
     public required string Email { get; set; }

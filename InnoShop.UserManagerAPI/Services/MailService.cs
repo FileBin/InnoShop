@@ -1,8 +1,7 @@
 ﻿using System.Net;
 using System.Net.Mail;
-using InnoShop.Application.Shared;
 using InnoShop.Domain.Services;
-using Microsoft.AspNetCore.Mvc;
+using InnoShop.Application.Shared.Misc;
 
 namespace InnoShop.Infrastructure.UserManagerAPI.Services;
 

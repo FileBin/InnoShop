@@ -1,4 +1,4 @@
-﻿namespace InnoShop.Application.Shared.Auth;
+﻿namespace InnoShop.Application.Shared.Models.Auth;
 
 public class LoginDto {
     public required string Login { get; set; }
