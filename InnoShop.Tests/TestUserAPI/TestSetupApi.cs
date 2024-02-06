@@ -42,18 +42,18 @@ public class TestSetupApi {
     }
 
     protected async Task<HttpResponseMessage> RegisterUser(UserCredentials credentials) {
-        return await client.PostAsJsonAsync("/api/accounts/register", new RegisterDto {
-            Email = credentials.Email,
-            Username = credentials.Username,
-            Password = credentials.Password,
-        });
+        return await client.PostAsJsonAsync("/api/accounts/register", new RegisterDto(
+            email: credentials.Email,
+            username: credentials.Username,
+            password: credentials.Password
+        ));
     }
 
     protected async Task<HttpResponseMessage> LoginUser(UserCredentials credentials) {
-        return await client.PostAsJsonAsync("/api/accounts/login", new LoginDto {
-            Login = credentials.Username,
-            Password = credentials.Password,
-        });
+        return await client.PostAsJsonAsync("/api/accounts/login", new LoginDto(
+            login: credentials.Username,
+            password: credentials.Password
+        ));
     }
 
     protected async Task<HttpResponseMessage> GetUserInfo(string? jwtToken = null) {

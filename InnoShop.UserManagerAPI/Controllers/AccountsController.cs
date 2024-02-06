@@ -1,10 +1,9 @@
-﻿using InnoShop.Application.Commands;
-using InnoShop.Application.Shared.Models.Auth;
-using InnoShop.Application.Shared.Misc;
+﻿using InnoShop.Application.Shared.Models.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using LinkGenerator = InnoShop.Application.Shared.Misc.LinkGenerator;
+using InnoShop.Application.Shared.Commands;
 
 namespace InnoShop.Infrastructure.UserManagerAPI.Controllers;
 
@@ -23,13 +22,11 @@ public class AccountsController : ControllerBase {
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginDto dto,
                                            CancellationToken cancellationToken) {
-        var command = new LoginUserCommand() {
-            Login = dto.Login,
-            Password = dto.Password,
-        };
+        var command = new LoginUserCommand(dto);
 
         var response = await mediator.Send(command, cancellationToken);
-        return response.ToActionResult();
+        
+        return Ok(response);
     }
 
 
@@ -38,15 +35,13 @@ public class AccountsController : ControllerBase {
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto,
                                               CancellationToken cancellationToken) {
-        var command = new RegisterUserCommand() {
-            Email = dto.Email,
-            Username = dto.Username,
-            Password = dto.Password,
+        var command = new RegisterUserCommand(dto) {
             ConfirmLinkGenerator = ConfirmLinkGenerator,
         };
 
-        var response = await mediator.Send(command, cancellationToken);
-        return response.ToActionResult();
+        await mediator.Send(command, cancellationToken);
+
+        return Ok();
     }
 
     [HttpGet]
@@ -60,8 +55,9 @@ public class AccountsController : ControllerBase {
             Token = token,
         };
 
-        var response = await mediator.Send(command, cancellationToken);
-        return response.ToActionResult();
+        await mediator.Send(command, cancellationToken);
+
+        return Ok();
     }
 
     [HttpPost]
@@ -74,8 +70,9 @@ public class AccountsController : ControllerBase {
             ConfirmLinkGenerator = ConfirmLinkGenerator,
         };
 
-        var response = await mediator.Send(command, cancellationToken);
-        return response.ToActionResult();
+        await mediator.Send(command, cancellationToken);
+
+        return Ok();
     }
 
     [HttpGet]
@@ -86,7 +83,8 @@ public class AccountsController : ControllerBase {
         };
 
         var response = await mediator.Send(command, cancellationToken);
-        return response.ToActionResult();
+
+        return Ok(response);
     }
 
     private LinkGenerator ConfirmLinkGenerator {

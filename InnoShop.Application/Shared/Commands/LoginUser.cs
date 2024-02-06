@@ -5,12 +5,24 @@ using InnoShop.Application.Shared.Misc;
 using InnoShop.Domain;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using InnoShop.Application.Validation;
+using InnoShop.Application.Shared.Interfaces;
+using InnoShop.Application.Shared.Exceptions;
 
-namespace InnoShop.Application.Commands;
+namespace InnoShop.Application.Shared.Commands;
 
-public class LoginUserCommand : LoginDto, IRequest<Result<LoginResultDto>> {}
+public class LoginUserCommand : LoginDto, ICommand<LoginResultDto> {
+    public LoginUserCommand(LoginDto other) : base(other) { }
+}
 
-public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<LoginResultDto>> {
+public sealed class LoginUserValidator : AbstractValidator<LoginUserCommand> {
+    public LoginUserValidator() {
+        RuleFor(x => x.Login).LoginValidation();
+        RuleFor(x => x.Password).PasswordValidation();
+    }
+}
+
+public class LoginUserHandler : ICommandHandler<LoginUserCommand, LoginResultDto> {
     private readonly UserManager<ShopUser> userManager;
     private readonly SignInManager<ShopUser> signInManager;
     private readonly IConfiguration config;
@@ -25,16 +37,13 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<LoginRe
         jwtSecurityKey = configuration.GetSecurityKey();
     }
 
-    public async Task<Result<LoginResultDto>> Handle(LoginUserCommand request, CancellationToken cancellationToken) {
+    public async Task<LoginResultDto> Handle(LoginUserCommand request, CancellationToken cancellationToken) {
         var username = request.Login;
         var password = request.Password;
         var result = await signInManager.PasswordSignInAsync(username, password, false, false);
 
         if (!result.Succeeded) {
-            if (result.IsNotAllowed) {
-                return Result.Fail("Username or password are invalid");
-            } 
-            return Result.Fail("Failed to login");
+            throw new BadRequestException("Username or password are invalid");
         }
 
         var user = await userManager.FindByNameAsync(username);
@@ -56,11 +65,9 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<LoginRe
             signingCredentials: creds
         );
 
-        return Result.Ok(
-            new LoginResultDto() {
-                Token = new JwtSecurityTokenHandler().WriteToken(token),
-                Username = username
-            }
-        );
+        return new LoginResultDto() {
+            Token = new JwtSecurityTokenHandler().WriteToken(token),
+            Username = username
+        };
     }
 }

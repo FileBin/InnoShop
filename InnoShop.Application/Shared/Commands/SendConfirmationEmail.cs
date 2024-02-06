@@ -1,15 +1,24 @@
+using InnoShop.Application.Shared.Exceptions;
+using InnoShop.Application.Shared.Interfaces;
 using InnoShop.Application.Shared.Misc;
 using InnoShop.Domain;
 using InnoShop.Domain.Services;
 
-namespace InnoShop.Application.Commands;
+namespace InnoShop.Application.Shared.Commands;
 
-public class SendConfirmationEmailCommand : IRequest<Result> {
+public class SendConfirmationEmailCommand : ICommand {
     public required ShopUser User { get; init; }
     public required LinkGenerator ConfirmLinkGenerator { get; init; }
 }
 
-public class SendConfirmationEmailHandler : IRequestHandler<SendConfirmationEmailCommand, Result> {
+public sealed class SendConfirmationEmailValidator : AbstractValidator<SendConfirmationEmailCommand> {
+    public SendConfirmationEmailValidator() {
+        RuleFor(x => x.ConfirmLinkGenerator).NotNull();
+        RuleFor(x => x.User).NotNull();
+    }
+}
+
+public class SendConfirmationEmailHandler : ICommandHandler<SendConfirmationEmailCommand> {
     private readonly UserManager<ShopUser> userManager;
     private readonly IConfirmationMailService mailService;
 
@@ -19,11 +28,13 @@ public class SendConfirmationEmailHandler : IRequestHandler<SendConfirmationEmai
         this.mailService = mailService;
     }
 
-    public async Task<Result> Handle(SendConfirmationEmailCommand request, CancellationToken cancellationToken) {
+    public async Task Handle(SendConfirmationEmailCommand request, CancellationToken cancellationToken) {
         var user = request.User;
         var url = request.ConfirmLinkGenerator;
 
-        if (user.EmailConfirmed) return Result.Fail("Already confirmed!");
+        if (user.EmailConfirmed) {
+            throw new BadRequestException("Already confirmed!");
+        }
 
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
@@ -33,7 +44,5 @@ public class SendConfirmationEmailHandler : IRequestHandler<SendConfirmationEmai
         ArgumentNullException.ThrowIfNull(user.Email);
 
         await mailService.SendConfirmationEmailAsync(user.Email, user.Id, confirmationLink);
-        
-        return Result.Ok();
     }
 }

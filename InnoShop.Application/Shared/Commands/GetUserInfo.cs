@@ -2,14 +2,22 @@ using System.Security.Claims;
 using InnoShop.Application.Shared.Models.Auth;
 using InnoShop.Application.Shared.Misc;
 using InnoShop.Domain;
+using InnoShop.Application.Shared.Exceptions;
+using InnoShop.Application.Shared.Interfaces;
 
-namespace InnoShop.Application.Commands;
+namespace InnoShop.Application.Shared.Commands;
 
-public class GetUserInfoCommand : IRequest<Result<UserInfoDto>> {
+public class GetUserInfoCommand : ICommand<UserInfoDto> {
     public required ClaimsPrincipal User { get; init; }
 }
 
-public class GetUserInfoHandler : IRequestHandler<GetUserInfoCommand, Result<UserInfoDto>> {
+public sealed class GetUserInfoValidator : AbstractValidator<GetUserInfoCommand> {
+    public GetUserInfoValidator() {
+        RuleFor(x => x.User).NotNull();
+    }
+}
+
+public class GetUserInfoHandler : ICommandHandler<GetUserInfoCommand, UserInfoDto> {
     private readonly IMediator mediator;
     private readonly UserManager<ShopUser> userManager;
 
@@ -18,17 +26,17 @@ public class GetUserInfoHandler : IRequestHandler<GetUserInfoCommand, Result<Use
         this.mediator = mediator;
     }
 
-    public async Task<Result<UserInfoDto>> Handle(GetUserInfoCommand request,
+    public async Task<UserInfoDto> Handle(GetUserInfoCommand request,
                                                   CancellationToken cancellationToken) {
         var user = await userManager.GetUserAsync(request.User);
 
         if (user is null) {
-            return Result.Fail("User not found!");
+            throw new NotFoundException("User not found!");
         }
 
-        return Result.Ok(new UserInfoDto {
+        return new UserInfoDto {
             Email = user.Email ?? Util.NullMarker,
             Username = user.UserName ?? Util.NullMarker,
-        });
+        };
     }
 }
