@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using InnoShop.Application.Shared.Misc;
 using InnoShop.Application;
+using InnoShop.Application.Shared.Interfaces;
 
 namespace InnoShop.Infrastructure.UserManagerAPI;
 
@@ -18,7 +19,7 @@ public class Program {
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        builder.Services.AddApplicationServices();
+        builder.Services.AddApplicationServices<IUserCommandHandler>();
 
         builder.Services.ConfigureSwaggerJwt();
 

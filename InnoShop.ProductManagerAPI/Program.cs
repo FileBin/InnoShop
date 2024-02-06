@@ -19,7 +19,7 @@ public class Program {
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        builder.Services.AddApplicationServices();
+        builder.Services.AddApplicationServices<IProductCommandHandler>();
 
         builder.Services.ConfigureSwaggerJwt();
 

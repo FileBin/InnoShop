@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Reflection;
 using InnoShop.Application.Middleware;
+using InnoShop.Application.Shared.Interfaces;
 using InnoShop.Application.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -10,7 +11,8 @@ using Microsoft.OpenApi.Models;
 namespace InnoShop.Application;
 
 public static class ConfigureServices {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services) {
+    public static IServiceCollection AddApplicationServices<T>(this IServiceCollection services)
+    where T : ICommandHandler {
         var assembly = Assembly.GetExecutingAssembly();
         services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
         ValidatorOptions.Global.LanguageManager.Culture = CultureInfo.InvariantCulture;
@@ -21,6 +23,15 @@ public static class ConfigureServices {
         });
 
         services.AddTransient<ExceptionHandlingMiddleware>();
+
+        var descriptors = assembly.GetTypes()
+            .Where(typeof(ICommandHandler).IsAssignableFrom)
+            .Where(x => !typeof(T).IsAssignableFrom(x))
+            .Select(type => services.SingleOrDefault(desc => desc.ImplementationType == type))
+            .Where(x => x != null)
+            .ToList();
+
+        descriptors.ForEach(desc => services.Remove(desc!));
 
         return services;
     }
