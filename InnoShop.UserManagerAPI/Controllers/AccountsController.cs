@@ -1,7 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net.Mail;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using InnoShop.Application.Shared;
 using InnoShop.Application.Shared.Auth;
@@ -40,7 +38,7 @@ public class AccountsController : ControllerBase {
     }
 
     [HttpPost]
-    [Route("login")]
+    [Route("login", Name = nameof(Login))]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginDto dto) {
         var username = dto.Login;
@@ -81,7 +79,7 @@ public class AccountsController : ControllerBase {
 
 
     [HttpPost]
-    [Route("register")]
+    [Route("register", Name = nameof(Register))]
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto) {
         var newUser = new ShopUser { UserName = dto.Username, Email = dto.Email };
@@ -98,18 +96,17 @@ public class AccountsController : ControllerBase {
         ArgumentNullException.ThrowIfNull(newUser);
 
         _ = SendConfirmationEmailToUserAsync(newUser);
-
         return Ok(BaseResult.Success("You registered succesfully. But before login you need to verify your e-mail"));
     }
 
     [HttpGet]
-    [Route("confirm", Name = "ConfirmEmail")]
+    [Route("confirm", Name = nameof(ConfirmEmailAsync))]
     [AllowAnonymous]
     public async Task<IActionResult> ConfirmEmailAsync(string userId, string token) {
         var user = await UserManager.FindByIdAsync(userId);
 
         if (user is null) {
-            return BadRequest(BaseResult.Error("User not found"));
+            return NotFound(BaseResult.Error("User not found"));
         }
 
         var result = await UserManager.ConfirmEmailAsync(user, token);
@@ -118,17 +115,17 @@ public class AccountsController : ControllerBase {
             return BadRequest(BaseResult.Error("Bad token"));
         }
 
-        return Ok(BaseResult.Success());
+        return Ok(BaseResult.Success("You registered succesfully"));
     }
 
     [HttpPost]
-    [Route("resend", Name = "ResendEmail")]
+    [Route("resend", Name = nameof(ResendEmail))]
     [AllowAnonymous]
     public async Task<IActionResult> ResendEmail([FromBody] string userEmail) {
         var user = await UserManager.FindByEmailAsync(userEmail);
 
         if (user is null) {
-            return BadRequest(BaseResult.Error($"User with email ${userEmail} not found"));
+            return NotFound(BaseResult.Error($"User with email ${userEmail} not found"));
         }
 
         await SendConfirmationEmailToUserAsync(user);
@@ -137,7 +134,7 @@ public class AccountsController : ControllerBase {
     }
 
     [HttpGet]
-    [Route("info")]
+    [Route("info", Name = nameof(GetInfo))]
     public async Task<IActionResult> GetInfo() {
         var user = await UserManager.GetUserAsync(User);
 
@@ -159,15 +156,9 @@ public class AccountsController : ControllerBase {
 
         var token = await UserManager.GenerateEmailConfirmationTokenAsync(user);
         
-        var confirmationLink = Url.Link("ConfirmEmail", new { userId = user.Id, token });
-
-        if (confirmationLink is null && Environment.IsDevelopment()) {
-            confirmationLink = $"/api/accounts/confirm"
-                             + $"?userId={Uri.EscapeDataString(user.Id)}"
-                             + $"&token={Uri.EscapeDataString(token)}";
-        }
+        var confirmationLink = Url.Link(nameof(ConfirmEmailAsync), new { userId = user.Id, token });
+        
         ArgumentNullException.ThrowIfNull(confirmationLink);
-
         ArgumentNullException.ThrowIfNull(user.Email);
 
         await MailService.SendConfirmationEmailAsync(user.Email, user.Id, confirmationLink);

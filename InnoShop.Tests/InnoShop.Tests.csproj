@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\InnoShop.UserManagerAPI\InnoShop.Infrastructure.UserManagerAPI.csproj" />
-    <ProjectReference Include="..\InnoShop.Application.Shared\InnoShop.Application.Shared.csproj" />
+    <ProjectReference Include="..\InnoShop.Application\InnoShop.Application.csproj" />
   </ItemGroup>
 
 </Project>

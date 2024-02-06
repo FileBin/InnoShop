@@ -5,8 +5,6 @@ using InnoShop.Domain.Services;
 namespace InnoShop.Tests.TestUserAPI;
 
 class TestMailService : IConfirmationMailService {
-
-
     static ConcurrentBag<MailMessage> testEmailStorage = new ConcurrentBag<MailMessage>();
 
     public static IEnumerable<MailMessage> EmailStorage { get => testEmailStorage; }
@@ -21,6 +19,7 @@ class TestMailService : IConfirmationMailService {
                 to: destination,
                 subject,
                 message));
+
         return Task.CompletedTask;
     }
 

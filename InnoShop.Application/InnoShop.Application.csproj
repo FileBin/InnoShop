@@ -15,4 +15,8 @@
     <ProjectReference Include="..\InnoShop.Domain\InnoShop.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Shared/" />
+  </ItemGroup>
+
 </Project>
