@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InnoShop.Infrastructure.Use
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InnoShop.Infrastructure.ProductManagerAPI", "InnoShop.ProductManagerAPI\InnoShop.Infrastructure.ProductManagerAPI.csproj", "{621F05EB-A2FC-47CF-B585-E14F919155C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InnoShop.Application.Shared", "InnoShop.Application.Shared\InnoShop.Application.Shared.csproj", "{8469A21B-C671-4E85-BEDD-B4266D674623}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InnoShop.Application", "InnoShop.Application\InnoShop.Application.csproj", "{8469A21B-C671-4E85-BEDD-B4266D674623}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InnoShop.Tests", "InnoShop.Tests\InnoShop.Tests.csproj", "{79E84E57-242A-4459-8ECD-659C3FC6C089}"
 EndProject

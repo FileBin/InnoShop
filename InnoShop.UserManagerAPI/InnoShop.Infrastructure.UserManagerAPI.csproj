@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Mapster" Version="7.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
@@ -21,7 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\InnoShop.Domain\InnoShop.Domain.csproj" />
-    <ProjectReference Include="..\InnoShop.Application.Shared\InnoShop.Application.Shared.csproj" />
+    <ProjectReference Include="..\InnoShop.Application\InnoShop.Application.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,4 @@
 using System.Text;
-using InnoShop.Application.Shared;
 using InnoShop.Domain;
 using InnoShop.Domain.Services;
 using InnoShop.Infrastructure.UserManagerAPI.Data;
@@ -9,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using InnoShop.Application.Shared.Misc;
+using InnoShop.Application;
 
 namespace InnoShop.Infrastructure.UserManagerAPI;
 
@@ -19,6 +20,8 @@ public class Program {
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+
+        builder.Services.AddApplicationServices();
 
         builder.Services.ConfigureSwaggerGen(options => {
             options.AddSecurityDefinition(
@@ -55,7 +58,7 @@ public class Program {
             database_password = builder.Configuration.GetOrThrow("Database:Password"),
             jwtIssuer = builder.Configuration.GetOrThrow("JwtIssuer"),
             jwtAudience = builder.Configuration.GetOrThrow("JwtAudience"),
-            jwtSecurityKey = builder.Configuration.GetOrThrow("JwtSecurityKey"),
+            jwtSecurityKey = builder.Configuration.GetSecurityKey(),
         };
 
         builder.Services.AddControllersWithViews();
@@ -98,7 +101,7 @@ public class Program {
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = config.jwtIssuer,
                 ValidAudience = config.jwtAudience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.jwtSecurityKey))
+                IssuerSigningKey = config.jwtSecurityKey,
             };
         });
 
@@ -112,6 +115,7 @@ public class Program {
         }
 
         app.UseHttpsRedirection();
+        app.AddInnoshopApplicationMiddleware();
 
         app.UseAuthentication();
         app.UseAuthorization();

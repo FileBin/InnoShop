@@ -1,7 +1,4 @@
-﻿using System.Net.Mail;
-using System.Text.RegularExpressions;
-
-namespace InnoShop.Tests.TestUserAPI;
+﻿namespace InnoShop.Tests.TestUserAPI;
 
 [TestFixture]
 public class TestLogin : TestSetupApi {

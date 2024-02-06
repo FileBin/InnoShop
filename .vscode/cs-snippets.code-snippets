@@ -1,0 +1,25 @@
+{
+    "Command": {
+        "prefix": "cmd",
+        "body": [
+          "namespace InnoShop.Application.Commands;",
+          "",
+          "public class ${1:Name}Command : ICommand<${2:ResultType}> { }",
+          "",
+          "public sealed class ${1:Name}Validator : AbstractValidator<${1:Name}Command> {",
+          "    public ${1:Name}Validator() {",
+          "        throw new NotImplementedException();",
+          "    }",
+          "}",
+          "",
+          "public class ${1:Name}CommandHandler : ICommandHandler<${1:Name}Command, ${2:ResultType}> {",
+          "    public async Task<${2:ResultType}> Handle(${1:Name}Command request,",
+          "                                                  CancellationToken cancellationToken) {",
+          "        throw new NotImplementedException();",
+          "    }",
+          "}",
+          "",
+        ],
+        "description": "Command template"
+      },
+}

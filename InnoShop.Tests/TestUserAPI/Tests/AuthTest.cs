@@ -1,4 +1,4 @@
-﻿using InnoShop.Application.Shared.Auth;
+﻿using InnoShop.Application.Shared.Models.Auth;
 
 namespace InnoShop.Tests.TestUserAPI;
 
@@ -20,8 +20,7 @@ public class AuthTest : TestSetupApi {
         result = await LoginUser(userCredentials);
         Assert.That(result.IsSuccessStatusCode);
 
-        var loginResult = await GetJsonContent<LoginResult>(result);
-        Assert.That(loginResult.IsSuccessful);
+        var loginResult = await GetJsonContent<LoginResultDto>(result);
         result = await GetUserInfo(loginResult.Token);
         Assert.That(result.IsSuccessStatusCode);
 
