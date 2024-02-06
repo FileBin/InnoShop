@@ -17,7 +17,7 @@ public sealed class GetUserInfoValidator : AbstractValidator<GetUserInfoCommand>
     }
 }
 
-public class GetUserInfoHandler : ICommandHandler<GetUserInfoCommand, UserInfoDto> {
+public class GetUserInfoHandler : IUserCommandHandler<GetUserInfoCommand, UserInfoDto> {
     private readonly IMediator mediator;
     private readonly UserManager<ShopUser> userManager;
 

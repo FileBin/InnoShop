@@ -22,7 +22,7 @@ public sealed class RegisterUserValidator : AbstractValidator<RegisterUserComman
     }
 }
 
-public class RegisterUserHandler : ICommandHandler<RegisterUserCommand> {
+public class RegisterUserHandler : IUserCommandHandler<RegisterUserCommand> {
     private readonly IMediator mediator;
     private readonly UserManager<ShopUser> userManager;
 

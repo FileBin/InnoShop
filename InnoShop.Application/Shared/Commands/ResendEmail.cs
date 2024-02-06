@@ -18,7 +18,7 @@ public sealed class ResendEmailValidator : AbstractValidator<ResendEmailCommand>
     }
 }
 
-public class ResendEmailHandler : ICommandHandler<ResendEmailCommand> {
+public class ResendEmailHandler : IUserCommandHandler<ResendEmailCommand> {
     private readonly UserManager<ShopUser> userManager;
     private readonly IMediator mediator;
 

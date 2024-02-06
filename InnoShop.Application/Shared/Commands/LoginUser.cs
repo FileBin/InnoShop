@@ -22,7 +22,7 @@ public sealed class LoginUserValidator : AbstractValidator<LoginUserCommand> {
     }
 }
 
-public class LoginUserHandler : ICommandHandler<LoginUserCommand, LoginResultDto> {
+public class LoginUserHandler : IUserCommandHandler<LoginUserCommand, LoginResultDto> {
     private readonly UserManager<ShopUser> userManager;
     private readonly SignInManager<ShopUser> signInManager;
     private readonly IConfiguration config;

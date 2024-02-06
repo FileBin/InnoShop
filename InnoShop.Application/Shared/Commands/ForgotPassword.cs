@@ -18,7 +18,7 @@ public sealed class ForgotPasswordValidator : AbstractValidator<ForgotPasswordCo
     }
 }
 
-public class ForgotPasswordHandler : ICommandHandler<ForgotPasswordCommand> {
+public class ForgotPasswordHandler : IUserCommandHandler<ForgotPasswordCommand> {
     private readonly UserManager<ShopUser> userManager;
 
     private readonly IPasswordResetMailService mailService;

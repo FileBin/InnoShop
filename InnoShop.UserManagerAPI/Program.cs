@@ -1,4 +1,3 @@
-using System.Text;
 using InnoShop.Domain;
 using InnoShop.Domain.Services;
 using InnoShop.Infrastructure.UserManagerAPI.Data;
@@ -7,7 +6,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using InnoShop.Application.Shared.Misc;
 using InnoShop.Application;
 
@@ -15,7 +13,6 @@ namespace InnoShop.Infrastructure.UserManagerAPI;
 
 public class Program {
     private static void Main(string[] args) {
-
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddEndpointsApiExplorer();
@@ -23,33 +20,9 @@ public class Program {
 
         builder.Services.AddApplicationServices();
 
-        builder.Services.ConfigureSwaggerGen(options => {
-            options.AddSecurityDefinition(
-                JwtBearerDefaults.AuthenticationScheme,
-                new OpenApiSecurityScheme {
-                    Name = "Authorization",
-                    Description = "Please provide a valid token",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.Http,
-                    Scheme = JwtBearerDefaults.AuthenticationScheme
-                });
+        builder.Services.ConfigureSwaggerJwt();
 
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement() {
-                {
-                    new OpenApiSecurityScheme {
-                        Reference = new OpenApiReference {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        },
-                        Scheme = "oauth2",
-                        Name = "Bearer",
-                        In = ParameterLocation.Header,
-                    },
-                    Array.Empty<string>()
-                }
-            });
-        });
+        builder.Services.AddControllers();
 
         var config = new {
             database_host = builder.Configuration["Database:Host"] ?? "localhost",
@@ -60,8 +33,6 @@ public class Program {
             jwtAudience = builder.Configuration.GetOrThrow("JwtAudience"),
             jwtSecurityKey = builder.Configuration.GetSecurityKey(),
         };
-
-        builder.Services.AddControllersWithViews();
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql($"Host={config.database_host};"

@@ -18,7 +18,7 @@ public sealed class SendConfirmationEmailValidator : AbstractValidator<SendConfi
     }
 }
 
-public class SendConfirmationEmailHandler : ICommandHandler<SendConfirmationEmailCommand> {
+public class SendConfirmationEmailHandler : IUserCommandHandler<SendConfirmationEmailCommand> {
     private readonly UserManager<ShopUser> userManager;
     private readonly IConfirmationMailService mailService;
 

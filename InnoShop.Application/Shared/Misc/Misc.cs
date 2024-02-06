@@ -6,7 +6,6 @@ using Microsoft.IdentityModel.Tokens;
 namespace InnoShop.Application.Shared.Misc;
 
 public static class Util {
-
     public static readonly string NullMarker = "(null)";
     public static string GetOrThrow(this IConfiguration config, string key) {
         var val = config[key];
@@ -17,7 +16,7 @@ public static class Util {
     }
 
     public static SymmetricSecurityKey GetSecurityKey(this IConfiguration config) {
-        return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetOrThrow("JwtSecurityKey")));
+        return new SymmetricSecurityKey(Convert.FromBase64String(config.GetOrThrow("JwtSecurityKey")));
     }
 
     public static string AnnonymousToUrlQuery(object o) {
@@ -27,8 +26,10 @@ public static class Util {
             if (str is not null) {
                 return $"{Uri.EscapeDataString(x.Key)}={Uri.EscapeDataString(str)}";
             }
-            return "";
-        }).ToArray();
+            return null;
+        })
+        .Where(x => x is not null)
+        .ToArray();
         return string.Join("&", pairs);
     }
 }

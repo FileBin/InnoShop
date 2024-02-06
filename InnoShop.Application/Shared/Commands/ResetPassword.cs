@@ -17,7 +17,7 @@ public sealed class ResetPasswordValidator : AbstractValidator<ResetPasswordComm
     }
 }
 
-public class ResetPasswordHandler : ICommandHandler<ResetPasswordCommand> {
+public class ResetPasswordHandler : IUserCommandHandler<ResetPasswordCommand> {
     private readonly UserManager<ShopUser> userManager;
 
     public ResetPasswordHandler(UserManager<ShopUser> userManager) {

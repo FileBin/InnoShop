@@ -1,44 +1,91 @@
-var builder = WebApplication.CreateBuilder(args);
+using InnoShop.Domain;
+using InnoShop.Domain.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using InnoShop.Application.Shared.Misc;
+using InnoShop.Application;
+using InnoShop.Infrastructure.ProductManagerAPI.Data;
+using InnoShop.Application.Shared.Interfaces;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+namespace InnoShop.Infrastructure.ProductManagerAPI;
 
-var app = builder.Build();
+public class Program {
+    private static void Main(string[] args) {
+        var builder = WebApplication.CreateBuilder(args);
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
 
-app.UseHttpsRedirection();
+        builder.Services.AddApplicationServices();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+        builder.Services.ConfigureSwaggerJwt();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+        builder.Services.AddControllers();
 
-app.Run();
+        var config = new {
+            database_host = builder.Configuration["Database:Host"] ?? "localhost",
+            database_port = builder.Configuration["Database:Port"] ?? "5432",
+            database_user = builder.Configuration.GetOrThrow("Database:User"),
+            database_password = builder.Configuration.GetOrThrow("Database:Password"),
+            jwtIssuer = builder.Configuration.GetOrThrow("JwtIssuer"),
+            jwtAudience = builder.Configuration.GetOrThrow("JwtAudience"),
+            jwtSecurityKey = builder.Configuration.GetSecurityKey(),
+        };
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql($"Host={config.database_host};"
+                            + $"Port={config.database_port};"
+                            + $"Username={config.database_user};"
+                            + $"Password={config.database_password};"
+                            + $"Database=innoshop_products;"));
+
+        builder.Services.AddAuthorization();
+
+        builder.Services.AddAuthentication(options => {
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options => {
+            options.RequireHttpsMetadata = false;
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = config.jwtIssuer,
+                ValidAudience = config.jwtAudience,
+                IssuerSigningKey = config.jwtSecurityKey,
+            };
+        });
+
+        AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(s => s.GetTypes())
+            .Where(typeof(IUserCommandHandler).IsAssignableFrom)
+            .Select(type => builder.Services.SingleOrDefault(desc => desc.ImplementationType == type))
+            .Where(x => x != null)
+            .ToList()
+            .ForEach(desc => builder.Services.Remove(desc!));
+
+        var app = builder.Build();
+
+        if (app.Environment.IsDevelopment()) {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirection();
+        app.AddInnoshopApplicationMiddleware();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        app.Run();
+    }
 }

@@ -16,7 +16,7 @@ public sealed class ConfirmEmailValidator : AbstractValidator<ConfirmEmailComman
     }
 }
 
-public class ConfirmEmailHandler : ICommandHandler<ConfirmEmailCommand> {
+public class ConfirmEmailHandler : IUserCommandHandler<ConfirmEmailCommand> {
     private readonly UserManager<ShopUser> userManager;
 
     public ConfirmEmailHandler(UserManager<ShopUser> userManager) {
