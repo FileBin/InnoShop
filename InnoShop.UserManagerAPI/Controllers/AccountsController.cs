@@ -13,6 +13,13 @@ namespace InnoShop.Infrastructure.UserManagerAPI.Controllers;
 public class AccountsController : ControllerBase {
     private readonly IMediator mediator;
 
+    private LinkGenerator ConfirmLinkGenerator {
+        get => new LinkGenerator {
+            ActionName = nameof(ConfirmEmailAsync),
+            Url = Url,
+        };
+    }
+
     public AccountsController(IMediator mediator) {
         this.mediator = mediator;
     }
@@ -25,7 +32,7 @@ public class AccountsController : ControllerBase {
         var command = new LoginUserCommand(dto);
 
         var response = await mediator.Send(command, cancellationToken);
-        
+
         return Ok(response);
     }
 
@@ -75,6 +82,32 @@ public class AccountsController : ControllerBase {
         return Ok();
     }
 
+    [HttpPost]
+    [Route("forgot_password", Name = nameof(ForgotPassword))]
+    [AllowAnonymous]
+    public async Task<IActionResult> ForgotPassword([FromBody] string userEmail,
+                                         CancellationToken cancellationToken) {
+        var command = new ForgotPasswordCommand() {
+            UserEmail = userEmail,
+        };
+
+        await mediator.Send(command, cancellationToken);
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [Route("reset_password", Name = nameof(ResetPassword))]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto,
+                                                   CancellationToken cancellationToken) {
+        var command = new ResetPasswordCommand(dto);
+
+        await mediator.Send(command, cancellationToken);
+
+        return Ok();
+    }
+
     [HttpGet]
     [Route("info", Name = nameof(GetInfo))]
     public async Task<IActionResult> GetInfo(CancellationToken cancellationToken) {
@@ -85,12 +118,5 @@ public class AccountsController : ControllerBase {
         var response = await mediator.Send(command, cancellationToken);
 
         return Ok(response);
-    }
-
-    private LinkGenerator ConfirmLinkGenerator {
-        get => new LinkGenerator {
-            ActionName = nameof(ConfirmEmailAsync),
-            Url = Url,
-        };
     }
 }

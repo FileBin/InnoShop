@@ -38,16 +38,19 @@ public class LoginUserHandler : ICommandHandler<LoginUserCommand, LoginResultDto
     }
 
     public async Task<LoginResultDto> Handle(LoginUserCommand request, CancellationToken cancellationToken) {
-        var username = request.Login;
+        var user = await userManager.FindByNameAsync(request.Login);
+        user = user ?? await userManager.FindByEmailAsync(request.Login);
+
+        if (user is null) {
+            throw new BadRequestException("Username or password are invalid");
+        }
+
         var password = request.Password;
-        var result = await signInManager.PasswordSignInAsync(username, password, false, false);
+        var result = await signInManager.PasswordSignInAsync(user, password, false, false);
 
         if (!result.Succeeded) {
             throw new BadRequestException("Username or password are invalid");
         }
-
-        var user = await userManager.FindByNameAsync(username);
-        ArgumentNullException.ThrowIfNull(user);
 
         var claims = new[] {
             new Claim(ClaimTypes.Name, user.UserName ?? Util.NullMarker),
@@ -66,8 +69,8 @@ public class LoginUserHandler : ICommandHandler<LoginUserCommand, LoginResultDto
         );
 
         return new LoginResultDto() {
+             Username = user.UserName!,
             Token = new JwtSecurityTokenHandler().WriteToken(token),
-            Username = username
         };
     }
 }

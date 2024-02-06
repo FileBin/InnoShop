@@ -5,7 +5,7 @@ using InnoShop.Application.Shared.Misc;
 
 namespace InnoShop.Infrastructure.UserManagerAPI.Services;
 
-public class MailService : IConfirmationMailService {
+public class MailService : IConfirmationMailService, IPasswordResetMailService {
     IConfiguration Configuration;
     public MailService(IConfiguration configuration) {
         Configuration = configuration;
@@ -18,6 +18,16 @@ public class MailService : IConfirmationMailService {
         await SendEmailAsync(
            destination: userEmail,
            subject: "InnoShop email confirmation",
+           message: mailText);
+    }
+
+    public async Task SendPasswordResetEmailAsync(string userEmail, string userId, string passwordResetLink) {
+        var mailText = $"Please follow this link tor reset your password\n"
+                     + $"{passwordResetLink}";
+
+        await SendEmailAsync(
+           destination: userEmail,
+           subject: "InnoShop password reset",
            message: mailText);
     }
 

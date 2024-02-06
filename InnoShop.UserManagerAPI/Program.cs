@@ -106,6 +106,7 @@ public class Program {
         });
 
         builder.Services.AddScoped<IConfirmationMailService, MailService>();
+        builder.Services.AddScoped<IPasswordResetMailService, MailService>();
 
         var app = builder.Build();
 

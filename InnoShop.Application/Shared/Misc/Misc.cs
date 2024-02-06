@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -17,5 +18,17 @@ public static class Util {
 
     public static SymmetricSecurityKey GetSecurityKey(this IConfiguration config) {
         return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetOrThrow("JwtSecurityKey")));
+    }
+
+    public static string AnnonymousToUrlQuery(object o) {
+        var dict = HtmlHelper.AnonymousObjectToHtmlAttributes(o);
+        var pairs = dict.Select(x => {
+            var str = x.Value.ToString();
+            if (str is not null) {
+                return $"{Uri.EscapeDataString(x.Key)}={Uri.EscapeDataString(str)}";
+            }
+            return "";
+        }).ToArray();
+        return string.Join("&", pairs);
     }
 }

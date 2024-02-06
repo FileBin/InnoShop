@@ -8,7 +8,7 @@ namespace InnoShop.Application.Shared.Commands;
 
 public class ResendEmailCommand : ICommand {
     public required string UserEmail { get; init; }
-    public required LinkGenerator ConfirmLinkGenerator { get; init; }
+    public required ILinkGenerator ConfirmLinkGenerator { get; init; }
 }
 
 public sealed class ResendEmailValidator : AbstractValidator<ResendEmailCommand> {
