@@ -2,17 +2,22 @@
 using System.Reflection;
 using InnoShop.Application.Middleware;
 using InnoShop.Application.Shared.Interfaces;
+using InnoShop.Application.Shared.Misc;
 using InnoShop.Application.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace InnoShop.Application;
 
 public static class ConfigureServices {
-    public static IServiceCollection AddApplicationServices<T>(this IServiceCollection services)
+    public static IServiceCollection AddApplicationServices<T>(this IServiceCollection services, IConfiguration config)
     where T : ICommandHandler {
+        AddAuthorizationAndAuthentication(services, config);
+
         var assembly = Assembly.GetExecutingAssembly();
         services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
         ValidatorOptions.Global.LanguageManager.Culture = CultureInfo.InvariantCulture;
@@ -34,6 +39,29 @@ public static class ConfigureServices {
         descriptors.ForEach(desc => services.Remove(desc!));
 
         return services;
+    }
+
+    private static void AddAuthorizationAndAuthentication(IServiceCollection services, IConfiguration config) {
+        services.AddAuthorization();
+
+        services.AddAuthentication(options => {
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options => {
+            options.RequireHttpsMetadata = false;
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = config.GetOrThrow("JwtIssuer"),
+                ValidAudience = config.GetOrThrow("JwtAudience"),
+                IssuerSigningKey = config.GetSecurityKey(),
+            };
+        });
     }
 
     public static IServiceCollection ConfigureSwaggerJwt(this IServiceCollection services) {

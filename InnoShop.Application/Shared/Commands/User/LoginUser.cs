@@ -10,7 +10,7 @@ using InnoShop.Application.Shared.Interfaces;
 using InnoShop.Application.Shared.Exceptions;
 using InnoShop.Domain.Entities.Roles;
 
-namespace InnoShop.Application.Shared.Commands;
+namespace InnoShop.Application.Shared.Commands.User;
 
 public class LoginUserCommand : LoginDto, ICommand<LoginResultDto> {
     public LoginUserCommand(LoginDto other) : base(other) { }

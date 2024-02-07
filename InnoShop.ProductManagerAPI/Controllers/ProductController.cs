@@ -1,3 +1,6 @@
+using InnoShop.Application.Shared.Commands.Products;
+using InnoShop.Application.Shared.Misc;
+using InnoShop.Application.Shared.Models.Product;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,8 +18,55 @@ public class ProductsController : ControllerBase {
     }
 
     [HttpPost]
-    [Route("test", Name = nameof(Test))]
-    public IActionResult Test([FromBody] string name) {
-        return Ok($"Hello {name}!");
+    [Route("create", Name = nameof(Create))]
+    public async Task<IActionResult> Create([FromBody] CreateProductDto dto, CancellationToken cancellationToken) {
+        var command = new CreateProductCommand(dto) {
+            UserDesc = ClaimUserDescriptor.From(User),
+        };
+
+        var result = await mediator.Send(command, cancellationToken);
+
+        return Created(Url.Link(nameof(Get), new { id = result }), result);
+    }
+
+    [HttpGet]
+    [Route("{id}", Name = nameof(Get))]
+    public async Task<IActionResult> Get([FromRoute] string id, CancellationToken cancellationToken) {
+        var command = new GetProductCommand {
+            ProductId = id,
+            UserDesc = ClaimUserDescriptor.From(User),
+        };
+
+        var result = await mediator.Send(command, cancellationToken);
+
+        return Ok(result);
+    }
+
+    [HttpPut]
+    [Route("{id}", Name = nameof(Update))]
+    public async Task<IActionResult> Update([FromRoute] string id,
+                                            [FromBody] UpdateProductDto dto,
+                                            CancellationToken cancellationToken) {
+        var command = new UpdateProductCommand(dto) {
+            ProductId = id,
+            UserDesc = ClaimUserDescriptor.From(User),
+        };
+
+        await mediator.Send(command, cancellationToken);
+
+        return Ok();
+    }
+
+    [HttpDelete]
+    [Route("{id}", Name = nameof(Delete))]
+    public async Task<IActionResult> Delete([FromRoute] string id, CancellationToken cancellationToken) {
+        var command = new DeleteProductCommand {
+            ProductId = id,
+            UserDesc = ClaimUserDescriptor.From(User),
+        };
+
+        await mediator.Send(command, cancellationToken);
+
+        return Ok();
     }
 }

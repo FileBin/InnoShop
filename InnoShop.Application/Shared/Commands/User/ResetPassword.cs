@@ -3,7 +3,7 @@ using InnoShop.Application.Shared.Interfaces;
 using InnoShop.Application.Shared.Models.Auth;
 using InnoShop.Domain;
 
-namespace InnoShop.Application.Shared.Commands;
+namespace InnoShop.Application.Shared.Commands.User;
 
 public class ResetPasswordCommand : ResetPasswordDto, ICommand {
     public ResetPasswordCommand(ResetPasswordDto other) : base(other) { }

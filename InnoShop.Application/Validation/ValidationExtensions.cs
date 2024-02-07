@@ -2,7 +2,7 @@ namespace InnoShop.Application.Validation;
 
 internal static class ValidationExtensions {
     public static IRuleBuilderOptions<T, string> PasswordValidation<T>(this IRuleBuilder<T, string> ruleBuilder) {
-        return ruleBuilder.NotEmpty().Length(8,256);
+        return ruleBuilder.NotEmpty().Length(8, 256);
     }
 
     public static IRuleBuilderOptions<T, string> UsernameValidation<T>(this IRuleBuilder<T, string> ruleBuilder) {
@@ -15,5 +15,17 @@ internal static class ValidationExtensions {
 
     public static IRuleBuilderOptions<T, string> LoginValidation<T>(this IRuleBuilder<T, string> ruleBuilder) {
         return ruleBuilder.NotEmpty().MaximumLength(80);
+    }
+
+    public static IRuleBuilderOptions<T, decimal> PriceValidation<T>(this IRuleBuilder<T, decimal> ruleBuilder) {
+        return ruleBuilder.Must(x => x >= 0.00m);
+    }
+
+    public static IRuleBuilderOptions<T, string> TitleValidation<T>(this IRuleBuilder<T, string> ruleBuilder) {
+        return ruleBuilder.NotEmpty().Length(3, 128);
+    }
+
+    public static IRuleBuilderOptions<T, string> DescriptionValidation<T>(this IRuleBuilder<T, string> ruleBuilder) {
+        return ruleBuilder.MaximumLength(1024);
     }
 }

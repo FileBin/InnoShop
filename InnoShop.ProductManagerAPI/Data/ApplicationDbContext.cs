@@ -1,10 +1,21 @@
-using InnoShop.Domain;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using InnoShop.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace InnoShop.Infrastructure.ProductManagerAPI.Data;
 
-public class ApplicationDbContext : IdentityDbContext<ShopUser, IdentityRole, string> {
-    public ApplicationDbContext(DbContextOptions options) : base(options) { }
+public class ApplicationDbContext : DbContext, IProductDbContext {
+    public DbSet<Product> Products => Set<Product>();
+
+    Task<int>? SavingTask;
+
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    : base(options) {
+        Database.EnsureCreated();
+    }
+
+    public void TriggerSave() {
+        if (SavingTask is null || SavingTask.IsCompleted) {
+            SavingTask = SaveChangesAsync();
+        }
+    }
 }

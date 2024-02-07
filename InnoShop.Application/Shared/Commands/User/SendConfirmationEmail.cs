@@ -1,10 +1,9 @@
 using InnoShop.Application.Shared.Exceptions;
 using InnoShop.Application.Shared.Interfaces;
-using InnoShop.Application.Shared.Misc;
 using InnoShop.Domain;
 using InnoShop.Domain.Services;
 
-namespace InnoShop.Application.Shared.Commands;
+namespace InnoShop.Application.Shared.Commands.User;
 
 public class SendConfirmationEmailCommand : ICommand {
     public required ShopUser User { get; init; }

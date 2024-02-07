@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
+﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -7,6 +6,8 @@ namespace InnoShop.Application.Shared.Misc;
 
 public static class Util {
     public static readonly string NullMarker = "(null)";
+
+
     public static string GetOrThrow(this IConfiguration config, string key) {
         var val = config[key];
         if (val is null) {

@@ -1,10 +1,9 @@
 using InnoShop.Application.Shared.Exceptions;
 using InnoShop.Application.Shared.Interfaces;
-using InnoShop.Application.Shared.Misc;
 using InnoShop.Application.Validation;
 using InnoShop.Domain;
 
-namespace InnoShop.Application.Shared.Commands;
+namespace InnoShop.Application.Shared.Commands.User;
 
 public class ResendEmailCommand : ICommand {
     public required string UserEmail { get; init; }

@@ -2,7 +2,7 @@ using InnoShop.Application.Shared.Exceptions;
 using InnoShop.Application.Shared.Interfaces;
 using InnoShop.Domain;
 
-namespace InnoShop.Application.Shared.Commands;
+namespace InnoShop.Application.Shared.Commands.User;
 
 public class ConfirmEmailCommand : ICommand {
     public required string UserId { get; init; }

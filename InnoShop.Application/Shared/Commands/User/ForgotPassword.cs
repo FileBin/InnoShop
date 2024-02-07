@@ -6,7 +6,7 @@ using InnoShop.Domain;
 using InnoShop.Domain.Services;
 using Microsoft.Extensions.Configuration;
 
-namespace InnoShop.Application.Shared.Commands;
+namespace InnoShop.Application.Shared.Commands.User;
 
 public class ForgotPasswordCommand : ICommand {
     public required string UserEmail { get; init; }

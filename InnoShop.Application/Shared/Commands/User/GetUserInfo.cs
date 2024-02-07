@@ -5,7 +5,7 @@ using InnoShop.Domain;
 using InnoShop.Application.Shared.Exceptions;
 using InnoShop.Application.Shared.Interfaces;
 
-namespace InnoShop.Application.Shared.Commands;
+namespace InnoShop.Application.Shared.Commands.User;
 
 public class GetUserInfoCommand : ICommand<UserInfoDto> {
     public required ClaimsPrincipal User { get; init; }

@@ -5,7 +5,7 @@ using InnoShop.Application.Shared.Models.Auth;
 using InnoShop.Application.Validation;
 using InnoShop.Domain;
 
-namespace InnoShop.Application.Shared.Commands;
+namespace InnoShop.Application.Shared.Commands.User;
 
 public class RegisterUserCommand : RegisterDto, ICommand {
     public RegisterUserCommand(RegisterDto other) : base(other) {}

@@ -1,6 +1,5 @@
 using InnoShop.Domain;
 using InnoShop.Domain.Entities.Roles;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
