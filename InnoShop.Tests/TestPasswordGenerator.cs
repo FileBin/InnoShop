@@ -12,6 +12,7 @@ public static class TestPasswordGenerator {
     const string specialCharacters = "~!@#$%^&()_=-+*/.";
 
     const string allChars = uppercaseCharacters + lowercaseCharacters + digitsCharacters + specialCharacters;
+
     /// <summary>
     /// Generates a Random Password
     /// respecting the given strength requirements.
@@ -58,6 +59,22 @@ public static class TestPasswordGenerator {
         }
 
         return new string(chars.ToArray());
+    }
+
+    public static string GenerateRandomString(int length) {
+        var bytes = new byte[length];
+
+        Random.Shared.NextBytes(bytes);
+
+        return Convert.ToBase64String(bytes).Substring(0, length);
+    }
+
+    public static string GenerateRandomInvalidString(int length) {
+
+        return Enumerable.Range(1, length)
+            .Select(i => Random.Shared.Next())
+            .Select(r => char.ConvertFromUtf32(r%0x00d800))
+            .Aggregate((x, y) => $"{x}{y}");
     }
 
     private static char SelectRandom(string set) {

@@ -98,10 +98,9 @@ public class Program {
 
         app.MapControllers();
 
-        await app.Services
-            .CreateScope()
-            .ServiceProvider
-            .ConfigureRolesAsync();
+        using (var scope = app.Services.CreateScope()) {
+            await scope.ServiceProvider.ConfigureRolesAsync();
+        }            
 
         app.Run();
     }
