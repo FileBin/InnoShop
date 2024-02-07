@@ -2,4 +2,4 @@
 
 using Microsoft.AspNetCore.Identity;
 
-public class ShopUser : IdentityUser { }
+public class ShopUser : IdentityUser {}

@@ -9,11 +9,12 @@ using Microsoft.IdentityModel.Tokens;
 using InnoShop.Application.Shared.Misc;
 using InnoShop.Application;
 using InnoShop.Application.Shared.Interfaces;
+using InnoShop.Domain.Entities.Roles;
 
 namespace InnoShop.Infrastructure.UserManagerAPI;
 
 public class Program {
-    private static void Main(string[] args) {
+    private static async Task Main(string[] args) {
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddEndpointsApiExplorer();
@@ -42,7 +43,9 @@ public class Program {
                             + $"Password={config.database_password};"
                             + $"Database=innoshop_users;"));
 
-        builder.Services.AddDefaultIdentity<ShopUser>()
+        builder.Services
+            .AddDefaultIdentity<ShopUser>()
+            .AddRoles<ShopRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
         builder.Services.Configure<IdentityOptions>(options => {
@@ -94,6 +97,11 @@ public class Program {
         app.UseAuthorization();
 
         app.MapControllers();
+
+        await app.Services
+            .CreateScope()
+            .ServiceProvider
+            .ConfigureRolesAsync();
 
         app.Run();
     }

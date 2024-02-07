@@ -1,14 +1,10 @@
-using InnoShop.Domain;
-using InnoShop.Domain.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using InnoShop.Application.Shared.Misc;
 using InnoShop.Application;
 using InnoShop.Infrastructure.ProductManagerAPI.Data;
 using InnoShop.Application.Shared.Interfaces;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace InnoShop.Infrastructure.ProductManagerAPI;
 
