@@ -4,7 +4,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <BaseOutputPath>.build/bin/</BaseOutputPath>
-    <BaseIntermediateOutputPath>.build/obj/</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(MSBuildProjectDirectory)/.build/bin/</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildProjectDirectory)/.build/obj/</BaseIntermediateOutputPath>
   </PropertyGroup>
 </Project>

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using InnoShop.Domain.Abstraction;
+using InnoShop.Domain.Enums;
 
 namespace InnoShop.Domain.Entities;
 

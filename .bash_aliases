@@ -1,3 +1,3 @@
 ef() {
-    dotnet ef "$@" --msbuildprojectextensionspath .build
+    dotnet ef "$@" --msbuildprojectextensionspath .build/obj/
 }

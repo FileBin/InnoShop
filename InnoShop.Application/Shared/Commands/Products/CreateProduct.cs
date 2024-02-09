@@ -27,7 +27,7 @@ public class CreateProductCommandHandler(IProductDbContext context, IProductFact
  : IProductCommandHandler<CreateProductCommand, string> {
     public async Task<string> Handle(CreateProductCommand request, CancellationToken cancellationToken) {
         var product = productFactory.Create(request);
-        await context.Products.AddAsync(product);
+        await context.Products.AddAsync(product, cancellationToken);
 
         context.TriggerSave();
 

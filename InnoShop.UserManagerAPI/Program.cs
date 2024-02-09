@@ -66,11 +66,11 @@ public class Program {
         }
 
         app.UseHttpsRedirection();
-        app.AddInnoshopApplicationMiddleware();
+        app.AddApplicationLayers();
 
         app.UseAuthentication();
         app.UseAuthorization();
-
+        
         app.MapControllers();
 
         using (var scope = app.Services.CreateScope()) {

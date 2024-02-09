@@ -1,4 +1,3 @@
-using InnoShop.Application.Shared.Exceptions;
 using InnoShop.Application.Shared.Interfaces;
 using InnoShop.Application.Shared.Misc;
 using InnoShop.Domain.Abstraction;
@@ -23,12 +22,9 @@ public sealed class GetProductValidator : AbstractValidator<GetProductCommand> {
 public class GetProductCommandHandler(IProductDbContext context)
  : IProductCommandHandler<GetProductCommand, Product> {
     public async Task<Product> Handle(GetProductCommand request, CancellationToken cancellationToken) {
-        var productId = Guid.Parse(request.ProductId);
-        var product = await context.Products.FindAsync([productId], cancellationToken);
+        var product = await context.Products.GetProductById(request.ProductId, cancellationToken);
 
-        // make product invisible for others
-        if (product is null || !product.IsVisibleToUser(request.UserDesc))
-            throw NotFoundException.NotFoundInDatabase("Product");
+        product.ValidateVisibility(request.UserDesc);
 
         return product;
     }

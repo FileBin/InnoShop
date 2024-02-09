@@ -1,4 +1,4 @@
-namespace InnoShop.Domain.Entities;
+namespace InnoShop.Domain.Enums;
 
 public enum AviabilityStatus {
     Draft = 0,

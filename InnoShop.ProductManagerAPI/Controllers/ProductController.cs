@@ -1,15 +1,17 @@
+using InnoShop.Application;
 using InnoShop.Application.Shared.Commands.Products;
 using InnoShop.Application.Shared.Misc;
 using InnoShop.Application.Shared.Models.Product;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace InnoShop.Infrastructure.UserManagerAPI.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/products", Name = nameof(ProductsController))]
-[Authorize]
 public class ProductsController : ControllerBase {
     private readonly IMediator mediator;
 
@@ -68,5 +70,19 @@ public class ProductsController : ControllerBase {
         await mediator.Send(command, cancellationToken);
 
         return Ok();
+    }
+
+    [HttpGet]
+    [Route("search", Name = nameof(Search))]
+    public async Task<IActionResult> Search([FromQuery, BindRequired] SearchQueryDto dto, CancellationToken cancellationToken) {
+        var command = new SearchProductsCommand(dto) {
+            UserDesc = ClaimUserDescriptor.From(User),
+        };
+
+        var result = await mediator.Send(command, cancellationToken);
+    
+        result = result.Select(id => Url.Link(nameof(Get), new { id }) ?? Util.NullMarker);
+
+        return Ok(result);
     }
 }

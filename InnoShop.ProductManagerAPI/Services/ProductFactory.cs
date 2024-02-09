@@ -1,5 +1,6 @@
 using InnoShop.Domain.Abstraction;
 using InnoShop.Domain.Entities;
+using InnoShop.Domain.Enums;
 using InnoShop.Domain.Services;
 
 namespace InnoShop.Infrastructure.ProductManagerAPI.Services;

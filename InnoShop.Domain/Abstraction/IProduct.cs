@@ -1,4 +1,4 @@
-using InnoShop.Domain.Entities;
+using InnoShop.Domain.Enums;
 
 namespace InnoShop.Domain.Abstraction;
 
@@ -7,4 +7,8 @@ public interface IProduct : IProductDescriptor {
     string UserId { get; }
 
     AviabilityStatus Aviability { get; }
+
+    public DateTime CreationTimestamp { get; }
+
+    public DateTime LastUpdateTimestamp { get; }
 }

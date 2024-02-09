@@ -5,6 +5,9 @@ using InnoShop.Infrastructure.ProductManagerAPI.Data;
 using InnoShop.Application.Shared.Interfaces;
 using InnoShop.Domain.Services;
 using InnoShop.Infrastructure.ProductManagerAPI.Services;
+using Npgsql;
+using InnoShop.Domain.Enums;
+using System.Text.Json.Serialization;
 
 namespace InnoShop.Infrastructure.ProductManagerAPI;
 
@@ -16,7 +19,9 @@ public class Program {
         builder.Services.AddSwaggerGen();
         builder.Services.ConfigureSwaggerJwt();
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllers().AddJsonOptions(options => {
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
 
         var config = new {
             database_host = builder.Configuration["Database:Host"] ?? "localhost",
@@ -25,12 +30,17 @@ public class Program {
             database_password = builder.Configuration.GetOrThrow("Database:Password"),
         };
 
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql($"Host={config.database_host};"
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder($"Host={config.database_host};"
                             + $"Port={config.database_port};"
                             + $"Username={config.database_user};"
                             + $"Password={config.database_password};"
-                            + $"Database=innoshop_products;"));
+                            + $"Database=innoshop_products;");
+
+        dataSourceBuilder.MapEnum<AviabilityStatus>();
+        var dataSource = dataSourceBuilder.Build();
+
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql(dataSource));
 
 
         builder.Services.AddApplicationServices<IProductCommandHandler>(builder.Configuration);
@@ -40,7 +50,6 @@ public class Program {
 
         builder.Services.AddScoped<IProductFactory, ProductFactory>();
 
-
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment()) {
@@ -49,7 +58,7 @@ public class Program {
         }
 
         app.UseHttpsRedirection();
-        app.AddInnoshopApplicationMiddleware();
+        app.AddApplicationLayers();
 
         app.UseAuthentication();
         app.UseAuthorization();

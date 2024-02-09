@@ -28,4 +28,8 @@ internal static class ValidationExtensions {
     public static IRuleBuilderOptions<T, string> DescriptionValidation<T>(this IRuleBuilder<T, string> ruleBuilder) {
         return ruleBuilder.MaximumLength(1024);
     }
+
+    public static IRuleBuilderOptions<T, string> SearchStringValidation<T>(this IRuleBuilder<T, string> ruleBuilder) {
+        return ruleBuilder.MaximumLength(256);
+    }
 }

@@ -7,6 +7,8 @@ namespace InnoShop.Application.Shared.Misc;
 public static class Util {
     public static readonly string NullMarker = "(null)";
 
+    public static readonly int MaxQuery = 1024;
+
 
     public static string GetOrThrow(this IConfiguration config, string key) {
         var val = config[key];

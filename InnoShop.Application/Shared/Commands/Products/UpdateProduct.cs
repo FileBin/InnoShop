@@ -1,4 +1,3 @@
-using InnoShop.Application.Shared.Exceptions;
 using InnoShop.Application.Shared.Interfaces;
 using InnoShop.Application.Shared.Misc;
 using InnoShop.Application.Shared.Models.Product;
@@ -29,19 +28,19 @@ public sealed class UpdateProductValidator : AbstractValidator<UpdateProductComm
         When(x => x.Description is not null, () => {
             RuleFor(x => x.Description!).DescriptionValidation();
         });
+
+        When(x => x.Status is not null, () => {
+            RuleFor(x => x.Status!.Value).IsInEnum();
+        });
     }
 }
 
 public class UpdateProductCommandHandler(IProductDbContext context)
  : IProductCommandHandler<UpdateProductCommand> {
     public async Task Handle(UpdateProductCommand request, CancellationToken cancellationToken) {
-        var productId = Guid.Parse(request.ProductId);
+        var product = await context.Products.GetProductById(request.ProductId, cancellationToken);
 
-        var product = await context.Products.FindAsync([productId], cancellationToken);
-
-        // make product invisible for others
-        if (product is null || !product.IsEditableByUser(request.UserDesc))
-            throw NotFoundException.NotFoundInDatabase("Product");
+        product.ValidateEdit(request.UserDesc);
 
         if (request.Title is not null) {
             product.Title = request.Title;

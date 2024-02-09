@@ -16,6 +16,21 @@ namespace InnoShop.Application;
 public static class ConfigureServices {
     public static IServiceCollection AddApplicationServices<T>(this IServiceCollection services, IConfiguration config)
     where T : ICommandHandler {
+
+        services.AddProblemDetails(options =>
+            options.CustomizeProblemDetails = ctx => {
+                var ext = ctx.ProblemDetails.Extensions;
+
+                if (!ext.ContainsKey("traceId")) {
+                    ext.Add("traceId", ctx.HttpContext.TraceIdentifier);
+                }
+                if (!ext.ContainsKey("instance")) {
+                    ext.Add("instance", $"{ctx.HttpContext.Request.Method} {ctx.HttpContext.Request.Path}");
+                }
+            });
+
+        services.AddExceptionHandler<ExceptionHandler>();
+
         AddAuthorizationAndAuthentication(services, config);
 
         var assembly = Assembly.GetExecutingAssembly();
@@ -26,8 +41,6 @@ public static class ConfigureServices {
             cfg.RegisterServicesFromAssembly(assembly);
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         });
-
-        services.AddTransient<ExceptionHandlingMiddleware>();
 
         var descriptors = assembly.GetTypes()
             .Where(typeof(ICommandHandler).IsAssignableFrom)
@@ -91,12 +104,16 @@ public static class ConfigureServices {
                     Array.Empty<string>()
                 }
             });
+
+            options.SchemaFilter<EnumSchemaFilter>();
         });
 
         return services;
     }
 
-    public static IApplicationBuilder AddInnoshopApplicationMiddleware(this IApplicationBuilder builder) {
-        return builder.UseMiddleware<ExceptionHandlingMiddleware>();
+    public static IApplicationBuilder AddApplicationLayers(this IApplicationBuilder builder) {
+        builder.UseExceptionHandler();
+        builder.UseStatusCodePages();
+        return builder;
     }
 }
