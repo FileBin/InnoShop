@@ -12,17 +12,17 @@ public static class ProductAccessExtensions {
         if(user.IsAdmin) {
             return productsQuery;
         }
-        return productsQuery.Where(product => product.Aviability == AviabilityStatus.Published);
+        return productsQuery.Where(product => product.Availability == AvailabilityStatus.Published);
     }
 
     public static bool IsVisibleToUser(this IProduct product, IUserDescriptor user) {
         if (user.IsAdmin) return true;
 
-        switch (product.Aviability) {
-            case AviabilityStatus.Draft:
+        switch (product.Availability) {
+            case AvailabilityStatus.Draft:
                 return user.IsOwner(product);
-            case AviabilityStatus.Published:
-            case AviabilityStatus.Sold:
+            case AvailabilityStatus.Published:
+            case AvailabilityStatus.Sold:
                 return true;
         }
 

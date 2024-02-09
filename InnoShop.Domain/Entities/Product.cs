@@ -24,7 +24,7 @@ public class Product : IProduct {
     public required string Description { get; set; }
 
     [Column("status")]
-    public required AviabilityStatus Aviability { get; set; }
+    public required AvailabilityStatus Availability { get; set; }
     
     [Column("user_id")]
     public required string UserId { get; set; }

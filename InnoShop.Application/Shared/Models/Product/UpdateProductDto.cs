@@ -24,5 +24,5 @@ public class UpdateProductDto : IProductDescriptorNullable {
 
     public decimal? Price { get; set; }
 
-    public AviabilityStatus? Status { get; set; }
+    public AvailabilityStatus? Status { get; set; }
 }

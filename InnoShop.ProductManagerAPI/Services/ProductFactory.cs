@@ -10,7 +10,7 @@ public class ProductFactory : IProductFactory {
         var Now = DateTime.UtcNow;
         return new Product {
             Id = new Guid(),
-            Aviability = AviabilityStatus.Draft,
+            Availability = AvailabilityStatus.Draft,
             CreationTimestamp = Now,
             LastUpdateTimestamp = Now,
 

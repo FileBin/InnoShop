@@ -36,7 +36,7 @@ public class Program {
                             + $"Password={config.database_password};"
                             + $"Database=innoshop_products;");
 
-        dataSourceBuilder.MapEnum<AviabilityStatus>();
+        dataSourceBuilder.MapEnum<AvailabilityStatus>();
         var dataSource = dataSourceBuilder.Build();
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>

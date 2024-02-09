@@ -20,7 +20,7 @@ public class ApplicationDbContext : DbContext, IProductDbContext {
     }
 
     protected override void OnModelCreating(ModelBuilder builder) {
-        builder.HasPostgresEnum<AviabilityStatus>();
+        builder.HasPostgresEnum<AvailabilityStatus>();
     }
 
     public void TriggerSave() {

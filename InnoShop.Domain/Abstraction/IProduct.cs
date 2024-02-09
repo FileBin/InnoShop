@@ -6,7 +6,7 @@ public interface IProduct : IProductDescriptor {
     Guid Id { get; }
     string UserId { get; }
 
-    AviabilityStatus Aviability { get; }
+    AvailabilityStatus Availability { get; }
 
     public DateTime CreationTimestamp { get; }
 

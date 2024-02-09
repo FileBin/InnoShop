@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InnoShop.Infrastructure.ProductManagerAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240209141625_InitialCreate")]
+    [Migration("20240209224342_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -24,7 +24,7 @@ namespace InnoShop.Infrastructure.ProductManagerAPI.Migrations
                 .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "aviability_status", new[] { "draft", "published", "sold" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "availability_status", new[] { "draft", "published", "sold" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("InnoShop.Domain.Entities.Product", b =>
@@ -34,8 +34,8 @@ namespace InnoShop.Infrastructure.ProductManagerAPI.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<AviabilityStatus>("Aviability")
-                        .HasColumnType("aviability_status")
+                    b.Property<AvailabilityStatus>("Availability")
+                        .HasColumnType("availability_status")
                         .HasColumnName("status");
 
                     b.Property<DateTime>("CreationTimestamp")

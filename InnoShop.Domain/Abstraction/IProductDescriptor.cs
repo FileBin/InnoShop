@@ -13,5 +13,5 @@ public interface IProductDescriptorNullable {
     public string? Description { get; }
     public decimal? Price { get; }
 
-    public AviabilityStatus? Status { get; }
+    public AvailabilityStatus? Status { get; }
 }
