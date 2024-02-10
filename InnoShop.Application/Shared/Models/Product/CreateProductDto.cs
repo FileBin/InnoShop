@@ -5,7 +5,7 @@ namespace InnoShop.Application.Shared.Models.Product;
 
 public class CreateProductDto : IProductDescriptor {
     [JsonConstructor]
-    public CreateProductDto(string title, string description, decimal price) {
+    public CreateProductDto(string title, decimal price, string description = "") {
         Title = title;
         Price = price;
         Description = description;
@@ -19,6 +19,5 @@ public class CreateProductDto : IProductDescriptor {
     
     public string Title { get; set; }
     public string Description { get; set; }
-
     public decimal Price { get; set; }
 }

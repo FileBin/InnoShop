@@ -5,21 +5,21 @@ using InnoShop.Domain.Enums;
 namespace InnoShop.Tests.TestProductAPI.Tests;
 
 class CRUDTestsBase : SetupProductAuth {
-    protected CreateProductDto NormalProduct
+    public static CreateProductDto NormalProduct
     => new CreateProductDto(
             title: "A product",
             description: TestGenerator.GenerateRandomString(300),
             price: 12.00m
         );
 
-    protected CreateProductDto FreeProduct
+    public static CreateProductDto FreeProduct
     => new CreateProductDto(
         title: "A Free product",
         description: TestGenerator.GenerateRandomString(300),
         price: 0.00m
     );
 
-    protected UpdateProductDto UpdateAll
+    public static UpdateProductDto UpdateAll
     => new UpdateProductDto(
         title: "Some Free product",
         description: TestGenerator.GenerateRandomString(300),

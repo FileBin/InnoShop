@@ -81,8 +81,6 @@ public class ProductsController : ControllerBase {
 
         var result = await mediator.Send(command, cancellationToken);
     
-        result = result.Select(id => Url.Link(nameof(Get), new { id }) ?? Util.NullMarker);
-
         return Ok(result);
     }
 }

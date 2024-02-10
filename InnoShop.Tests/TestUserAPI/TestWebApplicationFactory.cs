@@ -7,6 +7,8 @@ public class TestWebApplicationFactory<TProgram, TContext>
     : WebApplicationFactory<TProgram> where TProgram : class where TContext : DbContext {
     public required string DbName { get; init; }
 
+    public bool UseSqlite = false;
+
     protected override void ConfigureWebHost(IWebHostBuilder builder) {
         builder.ConfigureServices(services => {
             var dbContextDescriptor = services.SingleOrDefault(
@@ -19,9 +21,15 @@ public class TestWebApplicationFactory<TProgram, TContext>
             if (dbConnectionDescriptor is not null)
                 services.Remove(dbConnectionDescriptor);
 
-            services.AddDbContext<TContext>(options => {
-                options.UseSqlite($"Data Source={DbName}.db");
-            });
+            if (UseSqlite) {
+                services.AddDbContext<TContext>(options => {
+                    options.UseSqlite($"Data Source={DbName}.db");
+                });
+            } else {
+                services.AddDbContext<TContext>(options => {
+                    options.UseInMemoryDatabase($"{DbName}");
+                });
+            }
 
             var mailService = services.SingleOrDefault(
                 d => d.ServiceType == typeof(IConfirmationMailService));
@@ -29,8 +37,10 @@ public class TestWebApplicationFactory<TProgram, TContext>
                 services.Remove(mailService);
 
             services.AddScoped<IConfirmationMailService, TestMailService>();
-
-            MigrateDbContext(services);
+            
+            if (UseSqlite) {
+                MigrateDbContext(services);
+            }
         });
     }
 

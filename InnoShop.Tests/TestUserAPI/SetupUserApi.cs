@@ -17,7 +17,8 @@ public class SetupUserApi {
     public virtual Task SetupAsync() {
         webAppUserApi =
         new TestWebApplicationFactory<Program, ApplicationDbContext>() {
-            DbName = "UserDb"
+            UseSqlite = true,
+            DbName = "UserDb",
         };
         clientUserApi = webAppUserApi.CreateClient();
         return Task.CompletedTask;

@@ -11,7 +11,7 @@ public class RouteBasedLinkGenerator : ILinkGenerator {
             link = link[..^1];
         }
         if (values is not null) {
-            link = $"{link}?{Util.AnonymousToUrlQuery(values)}";
+            link = $"{link}?{Util.AnyToUrlQuery(values)}";
         }
         return link;
     }

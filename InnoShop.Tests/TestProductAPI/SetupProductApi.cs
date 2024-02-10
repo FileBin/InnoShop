@@ -25,7 +25,8 @@ public class SetupProductApi : SetupUserApi {
 
         webAppProductApi =
         new TestWebApplicationFactory<Program, ApplicationDbContext>() {
-            DbName = "ProductDb"
+            UseSqlite = true,
+            DbName = "ProductDb",
         };
         clientProductApi = webAppProductApi.CreateClient();
 
@@ -57,6 +58,7 @@ public class SetupProductApi : SetupUserApi {
 
     protected async Task<HttpResponseMessage> SearchProducts(SearchQueryDto dto) {
         var linkGenerator = new RouteBasedLinkGenerator() { Route = "/api/products/search" };
-        return await clientProductApi.GetAsync(linkGenerator.GenerateLink(dto));
+        var link = linkGenerator.GenerateLink(dto);
+        return await clientProductApi.GetAsync(link);
     }
 }

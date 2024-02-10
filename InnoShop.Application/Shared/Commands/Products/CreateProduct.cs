@@ -9,7 +9,7 @@ namespace InnoShop.Application.Shared.Commands.Products;
 public class CreateProductCommand : CreateProductDto, ICreateProductDescriptor, ICommand<string> {
     public CreateProductCommand(CreateProductDto other) : base(other) { }
 
-    public CreateProductCommand(string title, string description, decimal price) : base(title, description, price) { }
+    public CreateProductCommand(string title, decimal price, string description = "") : base(title, price, description) { }
 
     public required IUserDescriptor UserDesc { get; init; }
 }

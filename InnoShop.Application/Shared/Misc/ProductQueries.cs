@@ -32,7 +32,7 @@ public static class ProductQueries {
                                                  IUserDescriptor user,
                                                  CancellationToken cancellationToken = default) {
 
-        var contains = searchQuery.Contains;
+        var contains = searchQuery.Contains?.Trim().ToLower();
         var priceFrom = searchQuery.PriceFrom;
         var priceUpTo = searchQuery.PriceUpTo;
 
@@ -53,12 +53,12 @@ public static class ProductQueries {
 
         if (contains is not null) {
             products = products.Where(product
-                => product.Title.Contains(contains));
+                => product.Title.ToLower().Contains(contains));
         }
 
         switch (searchQuery.SortingOrder) {
             case SortingOrder.AtoZ:
-                products = products.OrderBy(product => product.Title);
+                products = products.OrderBy(product => product.Title.ToLower());
                 break;
             case SortingOrder.ByDate:
                 products = products.OrderBy(product => product.CreationTimestamp);
