@@ -24,7 +24,7 @@ public class ApplicationDbContext : DbContext, IProductDbContext {
     }
 
     public void TriggerSave() {
-        if (SavingTask is null || SavingTask.IsCompleted) {
+        if (SavingTask?.IsCompleted ?? true) {
             SavingTask = SaveChangesAsync();
         }
     }

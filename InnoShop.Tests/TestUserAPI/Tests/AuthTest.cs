@@ -1,22 +1,22 @@
 ﻿using InnoShop.Application.Shared.Models.Auth;
 
-namespace InnoShop.Tests.TestUserAPI;
+namespace InnoShop.Tests.TestUserAPI.Tests;
 
-public class AuthTest : TestSetupApi {
+public class AuthTest : SetupUserApi {
     [Test]
     [CancelAfter(10_000)]
     public async Task UserInfoGet(CancellationToken cancellationToken) {
         var userCredentials = new UserCredentials {
             Email = "waffle@example.com",
             Username = "waffle",
-            Password = TestPasswordGenerator.GenerateRandomPassword()
+            Password = TestGenerator.GenerateRandomPassword()
         };
 
         var result = await RegisterUser(userCredentials);
         Assert.That(result.IsSuccessStatusCode);
-        
+
         await VerifyEmail(cancellationToken);
-        
+
         result = await LoginUser(userCredentials);
         Assert.That(result.IsSuccessStatusCode);
 
@@ -32,11 +32,11 @@ public class AuthTest : TestSetupApi {
 
     [Test]
     [CancelAfter(10_000)]
-    public async Task UserInfoUnathorized(CancellationToken cancellationToken) {
+    public async Task UserInfoUnauthorized(CancellationToken cancellationToken) {
         var userCredentials = new UserCredentials {
             Email = "waffle@example.com",
             Username = "waffle",
-            Password = TestPasswordGenerator.GenerateRandomPassword()
+            Password = TestGenerator.GenerateRandomPassword()
         };
 
         var result = await RegisterUser(userCredentials);

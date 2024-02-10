@@ -1,7 +1,7 @@
-﻿namespace InnoShop.Tests.TestUserAPI;
+﻿namespace InnoShop.Tests.TestUserAPI.Tests;
 
 [TestFixture]
-public class TestLogin : TestSetupApi {
+public class TestLogin : SetupUserApi {
     UserCredentials userCredentials;
 
     [SetUp]
@@ -11,7 +11,7 @@ public class TestLogin : TestSetupApi {
         userCredentials = new UserCredentials {
             Email = "waffle@example.com",
             Username = "waffle",
-            Password = TestPasswordGenerator.GenerateRandomPassword()
+            Password = TestGenerator.GenerateRandomPassword()
         };
 
         var result = await RegisterUser(userCredentials);

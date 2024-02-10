@@ -1,5 +1,5 @@
 namespace InnoShop.Application.Shared.Interfaces;
 
 public interface ILinkGenerator {
-    public string GenetareLink(object? values = null);
+    public string GenerateLink(object? values = null);
 }

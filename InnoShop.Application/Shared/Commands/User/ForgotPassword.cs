@@ -52,7 +52,7 @@ public class ForgotPasswordHandler : IUserCommandHandler<ForgotPasswordCommand> 
 
         var token = await userManager.GeneratePasswordResetTokenAsync(user);
 
-        var PasswordResetLink = url.GenetareLink(new { userId = user.Id, token });
+        var PasswordResetLink = url.GenerateLink(new { userId = user.Id, token });
 
         ArgumentNullException.ThrowIfNull(PasswordResetLink);
         ArgumentNullException.ThrowIfNull(user.Email);

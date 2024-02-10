@@ -5,13 +5,13 @@ using InnoShop.Application.Shared.Interfaces;
 public class RouteBasedLinkGenerator : ILinkGenerator {
     public required string Route { get; init; }
 
-    public string GenetareLink(object? values = null) {
+    public string GenerateLink(object? values = null) {
         var link = Route.Trim();
-        if (link.EndsWith("/")) {
-            link = link.Substring(0, link.Length - 1);
+        if (link.EndsWith('/')) {
+            link = link[..^1];
         }
         if (values is not null) {
-            link = $"{link}?{Util.AnnonymousToUrlQuery(values)}";
+            link = $"{link}?{Util.AnonymousToUrlQuery(values)}";
         }
         return link;
     }

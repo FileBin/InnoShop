@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace InnoShop.Tests.TestUserAPI;
+namespace InnoShop.Tests.TestUserAPI.Tests;
 
 [TestFixture]
-public class TestRegistration : TestSetupApi {
+public class TestRegistration : SetupUserApi {
     static readonly string TestEmail = "waffle@example.com";
     static readonly string TestUsername = "onionWaffle";
 
@@ -11,7 +11,7 @@ public class TestRegistration : TestSetupApi {
     => new UserCredentials() {
         Email = TestEmail,
         Username = TestUsername,
-        Password = TestPasswordGenerator.GenerateRandomPassword()
+        Password = TestGenerator.GenerateRandomPassword()
     };
 
     private string LongString
@@ -41,7 +41,7 @@ public class TestRegistration : TestSetupApi {
     [Test]
     public async Task InvalidCharsPassword() {
         var userCredentials = validCredentials;
-        userCredentials.Password = TestPasswordGenerator.GenerateRandomInvalidString(12);
+        userCredentials.Password = TestGenerator.GenerateRandomInvalidString(12);
 
         var result = await RegisterUser(userCredentials);
 
@@ -60,7 +60,7 @@ public class TestRegistration : TestSetupApi {
         };
 
         var userCredentials = validCredentials;
-        userCredentials.Username = TestPasswordGenerator.GenerateRandomPassword(longPasswordOptions);
+        userCredentials.Username = TestGenerator.GenerateRandomPassword(longPasswordOptions);
 
         var result = await RegisterUser(userCredentials);
 
@@ -90,7 +90,7 @@ public class TestRegistration : TestSetupApi {
     [Test]
     public async Task InvalidCharsUsername() {
         var userCredentials = validCredentials;
-        userCredentials.Username = TestPasswordGenerator.GenerateRandomInvalidString(8);
+        userCredentials.Username = TestGenerator.GenerateRandomInvalidString(8);
 
         var result = await RegisterUser(userCredentials);
 

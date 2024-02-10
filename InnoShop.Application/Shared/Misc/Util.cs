@@ -22,7 +22,7 @@ public static class Util {
         return new SymmetricSecurityKey(Convert.FromBase64String(config.GetOrThrow("JwtSecurityKey")));
     }
 
-    public static string AnnonymousToUrlQuery(object o) {
+    public static string AnonymousToUrlQuery(object o) {
         var dict = HtmlHelper.AnonymousObjectToHtmlAttributes(o);
         var pairs = dict.Select(x => {
             var str = x.Value.ToString();

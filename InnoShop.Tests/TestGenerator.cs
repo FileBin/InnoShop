@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace InnoShop.Tests;
 
-public static class TestPasswordGenerator {
+public static class TestGenerator {
 
     const string uppercaseCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const string lowercaseCharacters = "abcdefghijklmnopqrstuvwxyz";

@@ -37,7 +37,7 @@ public class SendConfirmationEmailHandler : IUserCommandHandler<SendConfirmation
 
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
-        var confirmationLink = url.GenetareLink(new { userId = user.Id, token });
+        var confirmationLink = url.GenerateLink(new { userId = user.Id, token });
 
         ArgumentNullException.ThrowIfNull(confirmationLink);
         ArgumentNullException.ThrowIfNull(user.Email);

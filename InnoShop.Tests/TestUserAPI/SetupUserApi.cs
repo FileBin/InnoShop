@@ -1,5 +1,6 @@
 using InnoShop.Infrastructure.UserManagerAPI;
 using System.Net.Http.Json;
+using InnoShop.Infrastructure.UserManagerAPI.Data;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,22 +9,25 @@ using InnoShop.Application.Shared.Models.Auth;
 
 namespace InnoShop.Tests.TestUserAPI;
 
-public class TestSetupApi {
-    WebApplicationFactory<Program> webApp;
-    protected HttpClient client;
+public class SetupUserApi {
+    WebApplicationFactory<Program> webAppUserApi;
+    protected HttpClient clientUserApi;
 
     [SetUp]
     public virtual Task SetupAsync() {
-        webApp = new TestWebApplicationFactory<Program>();
-        client = webApp.CreateClient();
+        webAppUserApi =
+        new TestWebApplicationFactory<Program, ApplicationDbContext>() {
+            DbName = "UserDb"
+        };
+        clientUserApi = webAppUserApi.CreateClient();
         return Task.CompletedTask;
     }
 
     [TearDown]
     public virtual void Cleanup() {
         TestMailService.ClearStorage();
-        client.Dispose();
-        webApp.Dispose();
+        clientUserApi.Dispose();
+        webAppUserApi.Dispose();
     }
 
     protected async Task VerifyEmail(CancellationToken token) {
@@ -42,7 +46,7 @@ public class TestSetupApi {
     }
 
     protected async Task<HttpResponseMessage> RegisterUser(UserCredentials credentials) {
-        return await client.PostAsJsonAsync("/api/accounts/register", new RegisterDto(
+        return await clientUserApi.PostAsJsonAsync("/api/accounts/register", new RegisterDto(
             email: credentials.Email,
             username: credentials.Username,
             password: credentials.Password
@@ -50,7 +54,7 @@ public class TestSetupApi {
     }
 
     protected async Task<HttpResponseMessage> LoginUser(UserCredentials credentials) {
-        return await client.PostAsJsonAsync("/api/accounts/login", new LoginDto(
+        return await clientUserApi.PostAsJsonAsync("/api/accounts/login", new LoginDto(
             login: credentials.Username,
             password: credentials.Password
         ));
@@ -62,12 +66,12 @@ public class TestSetupApi {
                 requestMessage.Headers.Authorization =
                     new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, jwtToken);
             }
-            return await client.SendAsync(requestMessage);
+            return await clientUserApi.SendAsync(requestMessage);
         }
     }
 
     protected async Task<HttpResponseMessage> FollowLink(string link) {
-        return await client.GetAsync(link);
+        return await clientUserApi.GetAsync(link);
     }
 
     protected async Task<T> GetJsonContent<T>(HttpResponseMessage response) {

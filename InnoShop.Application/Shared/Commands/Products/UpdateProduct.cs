@@ -3,13 +3,14 @@ using InnoShop.Application.Shared.Misc;
 using InnoShop.Application.Shared.Models.Product;
 using InnoShop.Application.Validation;
 using InnoShop.Domain.Abstraction;
+using InnoShop.Domain.Enums;
 
 namespace InnoShop.Application.Shared.Commands.Products;
 
 public class UpdateProductCommand : UpdateProductDto, IUpdateProductDescriptor, ICommand {
     public UpdateProductCommand(UpdateProductDto other) : base(other) { }
 
-    public UpdateProductCommand(string title, string description, decimal price) : base(title, description, price) { }
+    public UpdateProductCommand(string? title = null, string? description = null, decimal? price = null, AvailabilityStatus? status = null) : base(title, description, price, status) { }
 
     public required IUserDescriptor UserDesc { get; init; }
 
@@ -52,6 +53,10 @@ public class UpdateProductCommandHandler(IProductDbContext context)
 
         if (request.Price is not null) {
             product.Price = request.Price.Value;
+        }
+
+        if (request.Status is not null) {
+            product.Availability = request.Status.Value;
         }
 
         context.Products.Update(product);
