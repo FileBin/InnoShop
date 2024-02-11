@@ -26,6 +26,32 @@
                 "${workspaceFolder}/InnoShop.Presentation/InnoShop.Presentation.csproj"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Start InnoShop.UserManagerAPI",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/InnoShop.UserManagerAPI/InnoShop.Infrastructure.UserManagerAPI.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Start InnoShop.ProductManagerAPI",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/InnoShop.ProductManagerAPI/InnoShop.Infrastructure.ProductManagerAPI.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Start All",
+            "dependsOn": ["Start InnoShop.ProductManagerAPI", "Start InnoShop.UserManagerAPI", "Watch InnoShop.Presentation"]
         }
     ]
 }
