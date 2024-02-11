@@ -1,6 +1,0 @@
-@InnoShop.ProductManagerAPI_HostAddress = http://localhost:5192
-
-GET {{InnoShop.ProductManagerAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

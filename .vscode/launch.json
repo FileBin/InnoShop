@@ -26,6 +26,12 @@
             "projectPath": "${workspaceFolder}/InnoShop.UserManagerAPI/InnoShop.Infrastructure.UserManagerAPI.csproj",
             "type": "dotnet",
             "request": "launch",
+        },
+        {
+            "name": "Debug InnoShop.Infrastructure.ProductManagerAPI",
+            "projectPath": "${workspaceFolder}/InnoShop.ProductManagerAPI/InnoShop.Infrastructure.ProductManagerAPI.csproj",
+            "type": "dotnet",
+            "request": "launch",
         }
     ]
 }

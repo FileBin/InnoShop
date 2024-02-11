@@ -1,17 +1,18 @@
 using System.Data.Common;
 using InnoShop.Domain.Services;
-using InnoShop.Infrastructure.UserManagerAPI.Data;
 using Microsoft.AspNetCore.Hosting;
 
 namespace InnoShop.Tests.TestUserAPI;
-public class TestWebApplicationFactory<TProgram>
-    : WebApplicationFactory<TProgram> where TProgram : class {
-    public readonly static string ConnectionString = "Data Source=TestDb.db";
+public class TestWebApplicationFactory<TProgram, TContext>
+    : WebApplicationFactory<TProgram> where TProgram : class where TContext : DbContext {
+    public required string DbName { get; init; }
+
+    public bool UseSqlite = false;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder) {
         builder.ConfigureServices(services => {
             var dbContextDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
+                d => d.ServiceType == typeof(DbContextOptions<TContext>));
             if (dbContextDescriptor is not null)
                 services.Remove(dbContextDescriptor);
 
@@ -20,9 +21,15 @@ public class TestWebApplicationFactory<TProgram>
             if (dbConnectionDescriptor is not null)
                 services.Remove(dbConnectionDescriptor);
 
-            services.AddDbContext<ApplicationDbContext>(options => {
-                options.UseSqlite(ConnectionString);
-            });
+            if (UseSqlite) {
+                services.AddDbContext<TContext>(options => {
+                    options.UseSqlite($"Data Source={DbName}.db");
+                });
+            } else {
+                services.AddDbContext<TContext>(options => {
+                    options.UseInMemoryDatabase($"{DbName}");
+                });
+            }
 
             var mailService = services.SingleOrDefault(
                 d => d.ServiceType == typeof(IConfirmationMailService));
@@ -30,12 +37,14 @@ public class TestWebApplicationFactory<TProgram>
                 services.Remove(mailService);
 
             services.AddScoped<IConfirmationMailService, TestMailService>();
-
-            MigrateDbContext<ApplicationDbContext>(services);
+            
+            if (UseSqlite) {
+                MigrateDbContext(services);
+            }
         });
     }
 
-    public void MigrateDbContext<TContext>(IServiceCollection serviceCollection) where TContext : DbContext {
+    public void MigrateDbContext(IServiceCollection serviceCollection) {
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         using var scope = serviceProvider.CreateScope();

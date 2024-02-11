@@ -1,44 +1,70 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.EntityFrameworkCore;
+using InnoShop.Application.Shared.Misc;
+using InnoShop.Application;
+using InnoShop.Infrastructure.ProductManagerAPI.Data;
+using InnoShop.Application.Shared.Interfaces;
+using InnoShop.Domain.Services;
+using InnoShop.Infrastructure.ProductManagerAPI.Services;
+using Npgsql;
+using InnoShop.Domain.Enums;
+using System.Text.Json.Serialization;
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+namespace InnoShop.Infrastructure.ProductManagerAPI;
 
-var app = builder.Build();
+public class Program {
+    private static void Main(string[] args) {
+        var builder = WebApplication.CreateBuilder(args);
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+        builder.Services.ConfigureSwaggerJwt();
 
-app.UseHttpsRedirection();
+        builder.Services.AddControllers().AddJsonOptions(options => {
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+        var config = new {
+            database_host = builder.Configuration["Database:Host"] ?? "localhost",
+            database_port = builder.Configuration["Database:Port"] ?? "5432",
+            database_user = builder.Configuration.GetOrThrow("Database:User"),
+            database_password = builder.Configuration.GetOrThrow("Database:Password"),
+        };
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder($"Host={config.database_host};"
+                            + $"Port={config.database_port};"
+                            + $"Username={config.database_user};"
+                            + $"Password={config.database_password};"
+                            + $"Database=innoshop_products;");
 
-app.Run();
+        dataSourceBuilder.MapEnum<AvailabilityStatus>();
+        var dataSource = dataSourceBuilder.Build();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql(dataSource));
+
+
+        builder.Services.AddApplicationServices<IProductCommandHandler>(builder.Configuration);
+
+        builder.Services.AddScoped<IProductDbContext>(
+            provider => provider.GetRequiredService<ApplicationDbContext>());
+
+        builder.Services.AddScoped<IProductFactory, ProductFactory>();
+
+        var app = builder.Build();
+
+        if (app.Environment.IsDevelopment()) {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirection();
+        app.AddApplicationLayers();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        app.Run();
+    }
 }

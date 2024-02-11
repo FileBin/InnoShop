@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using LinkGenerator = InnoShop.Application.Shared.Misc.LinkGenerator;
-using InnoShop.Application.Shared.Commands;
+using InnoShop.Application.Shared.Commands.User;
 
 namespace InnoShop.Infrastructure.UserManagerAPI.Controllers;
 

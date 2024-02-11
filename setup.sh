@@ -25,6 +25,16 @@ if [ -z "$SECRETS_ID" ]; then
     echo "SECRETS_ID=\"$SECRETS_ID\"" >> "$CACHE_FILE"
 fi
 
+if [ -z "$ADMIN_PASSWORD" ]; then
+    echo "Enter admin user password [autogenerate]:"
+    read ADMIN_PASSWORD
+        if [ -z "$ADMIN_PASSWORD" ]; then
+        ADMIN_PASSWORD="$(gen_random_string 12)"
+        echo "admin user password is: $ADMIN_PASSWORD"
+    fi
+    echo "ADMIN_PASSWORD=\"$ADMIN_PASSWORD\"" >> "$CACHE_FILE"
+fi
+
 if [ -z "$SECURITY_KEY" ]; then
     SECURITY_KEY="$(gen_random_string 256)"
     echo "SECURITY_KEY=\"$SECURITY_KEY\"" >> "$CACHE_FILE"
@@ -80,7 +90,8 @@ cat <<EOF | dotnet user-secrets set --id "$SECRETS_ID"
   "Database:Password": "$DB_PASSWORD",
   "JwtSecurityKey": "$SECURITY_KEY",
   "SMTP:User": "$SMTP_USER",
-  "SMTP:Password": "$SMTP_PASSWORD"
+  "SMTP:Password": "$SMTP_PASSWORD",
+  "AdminDefaultPassword": "$ADMIN_PASSWORD"
 }
 EOF
 

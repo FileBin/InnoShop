@@ -1,67 +1,33 @@
-using System.Text;
 using InnoShop.Domain;
 using InnoShop.Domain.Services;
 using InnoShop.Infrastructure.UserManagerAPI.Data;
 using InnoShop.Infrastructure.UserManagerAPI.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using InnoShop.Application.Shared.Misc;
 using InnoShop.Application;
+using InnoShop.Application.Shared.Interfaces;
+using InnoShop.Domain.Entities.Roles;
 
 namespace InnoShop.Infrastructure.UserManagerAPI;
 
 public class Program {
-    private static void Main(string[] args) {
-
+    private static async Task Main(string[] args) {
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        builder.Services.AddApplicationServices();
+        builder.Services.ConfigureSwaggerJwt();
 
-        builder.Services.ConfigureSwaggerGen(options => {
-            options.AddSecurityDefinition(
-                JwtBearerDefaults.AuthenticationScheme,
-                new OpenApiSecurityScheme {
-                    Name = "Authorization",
-                    Description = "Please provide a valid token",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.Http,
-                    Scheme = JwtBearerDefaults.AuthenticationScheme
-                });
-
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement() {
-                {
-                    new OpenApiSecurityScheme {
-                        Reference = new OpenApiReference {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        },
-                        Scheme = "oauth2",
-                        Name = "Bearer",
-                        In = ParameterLocation.Header,
-                    },
-                    Array.Empty<string>()
-                }
-            });
-        });
+        builder.Services.AddControllers();
 
         var config = new {
             database_host = builder.Configuration["Database:Host"] ?? "localhost",
             database_port = builder.Configuration["Database:Port"] ?? "5432",
             database_user = builder.Configuration.GetOrThrow("Database:User"),
             database_password = builder.Configuration.GetOrThrow("Database:Password"),
-            jwtIssuer = builder.Configuration.GetOrThrow("JwtIssuer"),
-            jwtAudience = builder.Configuration.GetOrThrow("JwtAudience"),
-            jwtSecurityKey = builder.Configuration.GetSecurityKey(),
         };
-
-        builder.Services.AddControllersWithViews();
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql($"Host={config.database_host};"
@@ -70,7 +36,9 @@ public class Program {
                             + $"Password={config.database_password};"
                             + $"Database=innoshop_users;"));
 
-        builder.Services.AddDefaultIdentity<ShopUser>()
+        builder.Services
+            .AddDefaultIdentity<ShopUser>()
+            .AddRoles<ShopRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
         builder.Services.Configure<IdentityOptions>(options => {
@@ -84,26 +52,8 @@ public class Program {
             options.Password.RequiredUniqueChars = 1;
         });
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddApplicationServices<IUserCommandHandler>(builder.Configuration);
 
-        builder.Services.AddAuthentication(options => {
-            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(options => {
-            options.RequireHttpsMetadata = false;
-            options.SaveToken = true;
-            options.TokenValidationParameters = new TokenValidationParameters {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = config.jwtIssuer,
-                ValidAudience = config.jwtAudience,
-                IssuerSigningKey = config.jwtSecurityKey,
-            };
-        });
 
         builder.Services.AddScoped<IConfirmationMailService, MailService>();
         builder.Services.AddScoped<IPasswordResetMailService, MailService>();
@@ -116,12 +66,16 @@ public class Program {
         }
 
         app.UseHttpsRedirection();
-        app.AddInnoshopApplicationMiddleware();
+        app.AddApplicationLayers();
 
         app.UseAuthentication();
         app.UseAuthorization();
-
+        
         app.MapControllers();
+
+        using (var scope = app.Services.CreateScope()) {
+            await scope.ServiceProvider.ConfigureRolesAsync();
+        }
 
         app.Run();
     }

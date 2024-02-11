@@ -7,7 +7,7 @@ public class LinkGenerator : ILinkGenerator {
     public required string ActionName { get; init; }
     public required IUrlHelper Url { get; init; }
 
-    public string GenetareLink(object? values = null) {
+    public string GenerateLink(object? values = null) {
         var link = Url.Link(ActionName, values);
         ArgumentNullException.ThrowIfNull(link);
         return link;
