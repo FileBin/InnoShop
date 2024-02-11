@@ -12,10 +12,10 @@ if (-not (Test-Path '.private')) {
     New-Item -ItemType Directory -Name '.private'
 }
 
-# Get variables from cache file
 $DATABASE_FILE = '.private\database.env'
 $CACHE_FILE = '.private\cache.sh'
 
+# Get variables from cache file
 if (Test-Path $CACHE_FILE) {
   Get-Content $CACHE_FILE | foreach {
     $name, $value = $_.split('=')
