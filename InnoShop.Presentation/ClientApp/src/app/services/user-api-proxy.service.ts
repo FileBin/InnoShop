@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { AuthStateProviderService } from './auth-state-provider.service';
@@ -7,10 +7,13 @@ import { AuthStateProviderService } from './auth-state-provider.service';
   providedIn: 'root'
 })
 export class UserApiProxyService {
-
+  headers = new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8');
+  
   constructor(private http: HttpClient,
     @Inject('USER_API_URL') private userApiUrl: string,
-    private authStateProvider: AuthStateProviderService) { }
+    private authStateProvider: AuthStateProviderService) { 
+      
+    }
 
     login(dto: LoginDto) : Observable<void> {
       return this.http.post<LoginResultDto>(`${this.userApiUrl}/login`, dto)
@@ -26,7 +29,8 @@ export class UserApiProxyService {
     }
 
     forgotPassword(email: string) : Observable<void> {
-      return this.http.post<void>(`${this.userApiUrl}/forgot_password`, email);
+      return this.http.post<void>(`${this.userApiUrl}/forgot_password`, JSON.stringify(email), 
+      {headers: this.headers});
     }
 
     resetPassword(email: ResetPasswordDto) : Observable<void> {

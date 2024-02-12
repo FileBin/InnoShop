@@ -13,6 +13,7 @@ import { JwtInterceptor } from './middleware/jwt.interceptor';
 import { RegisterFormComponent } from './register-form/register-form.component';
 import { UserInfoComponent } from './user-info/user-info.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
     RegisterFormComponent,
     UserInfoComponent,
     ForgotPasswordComponent,
+    ResetPasswordComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -35,6 +37,8 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
       { path: 'counter', component: CounterComponent },
       { path: 'login', component: LoginFormComponent },
       { path: 'register', component: RegisterFormComponent },
+      { path: 'forgot_password', component: ForgotPasswordComponent },
+      { path: 'passwordreset', component: ResetPasswordComponent },
     ])
   ],
   providers: [
