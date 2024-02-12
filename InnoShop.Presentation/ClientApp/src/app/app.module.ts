@@ -15,6 +15,9 @@ import { UserInfoComponent } from './user-info/user-info.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { ResendEmailComponent } from './resend-email/resend-email.component';
+import { SearchComponent } from './search/search.component';
+
+import {MatSliderModule} from '@angular/material/slider'; 
 
 @NgModule({
   declarations: [
@@ -28,12 +31,14 @@ import { ResendEmailComponent } from './resend-email/resend-email.component';
     ForgotPasswordComponent,
     ResetPasswordComponent,
     ResendEmailComponent,
+    SearchComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    MatSliderModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'counter', component: CounterComponent },

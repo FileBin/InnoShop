@@ -22,7 +22,8 @@ code {
 }
 
 .vertical-center {
-  margin-top: 40vh;
+  margin-top: 45vh;
+  transform: translate(0, -50%);
 }
 
 pre {

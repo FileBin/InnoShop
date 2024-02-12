@@ -1,0 +1,47 @@
+.sidebar {
+    width: 300px;
+    height: 100vh;
+    position: fixed;
+    z-index: 1;
+}
+
+.sidebar-grid {
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.products-container {
+    margin: 0;
+    padding: 3rem;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 300px);
+    grid-auto-rows: 200px;
+    gap: 2rem;
+}
+
+.product {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1.2rem;
+}
+
+.product .title {
+    font-weight: bolder;
+    font-size: large;
+}
+
+.product .price {
+    font-weight: bolder;
+    font-size: large;
+}
+
+.product .desc {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    overflow: hidden;
+}

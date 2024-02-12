@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthStateProviderService } from '../services/auth-state-provider.service';
+import { GlobalStateService } from '../services/global-state.service';
 
 @Component({
   selector: 'app-nav-menu',
@@ -7,16 +8,14 @@ import { AuthStateProviderService } from '../services/auth-state-provider.servic
   styleUrls: ['./nav-menu.component.css']
 })
 export class NavMenuComponent {
-  isExpanded = false;
+  filtersExpanded = false;
 
-  constructor(private authStateProvider: AuthStateProviderService) {}
+  constructor(private authStateProvider: AuthStateProviderService,
+              private state: GlobalStateService) {}
 
-  collapse() {
-    this.isExpanded = false;
-  }
-
-  toggle() {
-    this.isExpanded = !this.isExpanded;
+  toggleFilters() {
+    this.filtersExpanded = !this.filtersExpanded;
+    this.state.changeFiltersState(this.filtersExpanded);
   }
 
   loggedIn() : boolean {
