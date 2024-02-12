@@ -28,3 +28,7 @@ app.MapControllerRoute(
 app.MapFallbackToFile("index.html");
 
 app.Run();
+
+//TODO: change search ids to objects
+//TODO: wrap search result into dto
+//TODO: add information into SearchResultDto about founded objects
