@@ -8,7 +8,6 @@ import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { JwtInterceptor } from './middleware/jwt.interceptor';
 
@@ -18,7 +17,6 @@ import { JwtInterceptor } from './middleware/jwt.interceptor';
     NavMenuComponent,
     HomeComponent,
     CounterComponent,
-    FetchDataComponent,
     LoginFormComponent,
   ],
   imports: [
@@ -29,7 +27,6 @@ import { JwtInterceptor } from './middleware/jwt.interceptor';
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'counter', component: CounterComponent },
-      { path: 'fetch-data', component: FetchDataComponent },
       { path: 'login', component: LoginFormComponent },
     ])
   ],
