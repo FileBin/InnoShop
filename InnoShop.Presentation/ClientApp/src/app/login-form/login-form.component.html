@@ -24,16 +24,24 @@
                     </div>
                 </div>
             </div>
-            <div class="d-flex">
-                <button [disabled]="loading" class="btn btn-primary">
-                    <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
-                    Login
-                </button>
-                <div>
-                    <a class="btn btn-link" [routerLink]="['/register']">Register</a>
-                </div>
+            <div class="d-flex flex-column">
+
                 <div class="ms-auto">
                     <a class="btn btn-link" [routerLink]="['/forgot_password']">Forgot password?</a>
+                </div>
+
+                <div class="d-flex flex-row">
+                    <button [disabled]="loading" class="btn btn-primary">
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
+                        Login
+                    </button>
+                    <div>
+                        <a class="btn btn-link" [routerLink]="['/register']">Register</a>
+                    </div>
+
+                    <div class="ms-auto">
+                        <a class="btn btn-link" [routerLink]="['/resend']">Verify email</a>
+                    </div>
                 </div>
             </div>
             <pre *ngIf="message.length > 0" class="mb-3 mt-3">{{ message }}</pre>

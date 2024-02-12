@@ -14,6 +14,7 @@ import { RegisterFormComponent } from './register-form/register-form.component';
 import { UserInfoComponent } from './user-info/user-info.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { ResendEmailComponent } from './resend-email/resend-email.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
     UserInfoComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
+    ResendEmailComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -39,6 +41,7 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
       { path: 'register', component: RegisterFormComponent },
       { path: 'forgot_password', component: ForgotPasswordComponent },
       { path: 'passwordreset', component: ResetPasswordComponent },
+      { path: 'resend', component: ResendEmailComponent },
     ])
   ],
   providers: [

@@ -8,7 +8,7 @@ import { AuthStateProviderService } from './auth-state-provider.service';
 })
 export class UserApiProxyService {
   headers = new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8');
-  
+
   constructor(private http: HttpClient,
     @Inject('USER_API_URL') private userApiUrl: string,
     private authStateProvider: AuthStateProviderService) { 
@@ -29,8 +29,7 @@ export class UserApiProxyService {
     }
 
     forgotPassword(email: string) : Observable<void> {
-      return this.http.post<void>(`${this.userApiUrl}/forgot_password`, JSON.stringify(email), 
-      {headers: this.headers});
+      return this.http.post<void>(`${this.userApiUrl}/forgot_password`, JSON.stringify(email), {headers: this.headers});
     }
 
     resetPassword(email: ResetPasswordDto) : Observable<void> {
@@ -39,6 +38,10 @@ export class UserApiProxyService {
 
     userInfo() : Observable<UserInfoDto> {
       return this.http.get<UserInfoDto>(`${this.userApiUrl}/info`);
+    }
+
+    resend(email: string) : Observable<void> {
+      return this.http.post<void>(`${this.userApiUrl}/resend`, JSON.stringify(email), {headers: this.headers});
     }
 }
 
