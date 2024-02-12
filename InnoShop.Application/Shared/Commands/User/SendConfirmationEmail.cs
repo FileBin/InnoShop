@@ -1,18 +1,18 @@
 using InnoShop.Application.Shared.Exceptions;
 using InnoShop.Application.Shared.Interfaces;
+using InnoShop.Application.Shared.Misc;
 using InnoShop.Domain;
 using InnoShop.Domain.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace InnoShop.Application.Shared.Commands.User;
 
 public class SendConfirmationEmailCommand : ICommand {
     public required ShopUser User { get; init; }
-    public required ILinkGenerator ConfirmLinkGenerator { get; init; }
 }
 
 public sealed class SendConfirmationEmailValidator : AbstractValidator<SendConfirmationEmailCommand> {
     public SendConfirmationEmailValidator() {
-        RuleFor(x => x.ConfirmLinkGenerator).NotNull();
         RuleFor(x => x.User).NotNull();
     }
 }
@@ -20,20 +20,26 @@ public sealed class SendConfirmationEmailValidator : AbstractValidator<SendConfi
 public class SendConfirmationEmailHandler : IUserCommandHandler<SendConfirmationEmailCommand> {
     private readonly UserManager<ShopUser> userManager;
     private readonly IConfirmationMailService mailService;
+    private readonly IConfiguration config;
 
     public SendConfirmationEmailHandler(UserManager<ShopUser> userManager,
-                                        IConfirmationMailService mailService) {
+                                        IConfirmationMailService mailService,
+                                        IConfiguration config) {
         this.userManager = userManager;
         this.mailService = mailService;
+        this.config = config;
     }
 
     public async Task Handle(SendConfirmationEmailCommand request, CancellationToken cancellationToken) {
         var user = request.User;
-        var url = request.ConfirmLinkGenerator;
 
         if (user.EmailConfirmed) {
             throw new BadRequestException("Already confirmed!");
         }
+
+        var url = new RouteBasedLinkGenerator() {
+            Route = config.GetOrThrow("ConfirmEmailRoute"),
+        };
 
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
 

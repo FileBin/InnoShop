@@ -7,12 +7,10 @@ namespace InnoShop.Application.Shared.Commands.User;
 
 public class ResendEmailCommand : ICommand {
     public required string UserEmail { get; init; }
-    public required ILinkGenerator ConfirmLinkGenerator { get; init; }
 }
 
 public sealed class ResendEmailValidator : AbstractValidator<ResendEmailCommand> {
     public ResendEmailValidator() {
-        RuleFor(x => x.ConfirmLinkGenerator).NotNull();
         RuleFor(x => x.UserEmail).EmailValidation();
     }
 }
@@ -34,7 +32,6 @@ public class ResendEmailHandler : IUserCommandHandler<ResendEmailCommand> {
         }
 
         _ = mediator.Send(new SendConfirmationEmailCommand {
-            ConfirmLinkGenerator = request.ConfirmLinkGenerator,
             User = user,
         });
     }

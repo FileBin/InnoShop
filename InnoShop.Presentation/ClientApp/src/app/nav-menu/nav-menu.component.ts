@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthStateProviderService } from '../services/auth-state-provider.service';
 
 @Component({
   selector: 'app-nav-menu',
@@ -8,11 +9,17 @@ import { Component } from '@angular/core';
 export class NavMenuComponent {
   isExpanded = false;
 
+  constructor(private authStateProvider: AuthStateProviderService) {}
+
   collapse() {
     this.isExpanded = false;
   }
 
   toggle() {
     this.isExpanded = !this.isExpanded;
+  }
+
+  loggedIn() : boolean {
+    return this.authStateProvider.isAuthorized();
   }
 }
