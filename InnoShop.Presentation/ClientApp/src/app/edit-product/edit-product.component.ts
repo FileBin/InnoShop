@@ -6,7 +6,7 @@ import { ErrorStateMatcher } from '@angular/material/core';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProductStateService } from '../services/product-state.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Data, Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-product',
@@ -21,6 +21,9 @@ export class EditProductComponent {
   submitted = false;
   loading = false;
   message = "";
+
+  createdTime = new Date();
+  lastUpdateTime = new Date();
 
   isCreated$ = new BehaviorSubject<boolean>(false);
 
@@ -56,6 +59,11 @@ export class EditProductComponent {
 
 
     var isCreated = product !== null;
+
+    if (isCreated) {
+      this.createdTime = new Date(product!.creationTimestamp);
+      this.lastUpdateTime = new Date(product!.lastUpdateTimestamp);
+    }
 
     this.form = this.formBuilder.group({
       availability: [status, isCreated ? [Validators.required] : []],
@@ -145,6 +153,7 @@ export class EditProductComponent {
       }
     );
   }
+
   deleteSelf() {
     let product = this.product.state$.value;
     if (product !== null) {
@@ -154,6 +163,10 @@ export class EditProductComponent {
         }
       });
     }
+  }
+
+  formatTime(d: Date) {
+    return `${d.getDate()}.${d.getMonth()}.${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}`;
   }
 }
 

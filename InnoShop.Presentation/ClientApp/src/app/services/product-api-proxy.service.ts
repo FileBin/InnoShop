@@ -61,6 +61,7 @@ export interface UpdateProductDto {
 }
 
 export interface Product extends CreateProductDto {
+  isEditable: boolean,
   id: string;
   userId: string;
   availability: AvailabilityStatus;

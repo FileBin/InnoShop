@@ -85,7 +85,7 @@ public static class ProductQueries {
 
 
         return new SearchResultDto {
-            Products = page,
+            Products = page.Select(x => x.ToResult(user)).ToArray(),
             QueryCount = count,
         };
     }

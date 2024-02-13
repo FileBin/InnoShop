@@ -6,7 +6,7 @@
 
                 @if (isCreated$ | async) {
                 <div class="text-secondary">
-                    CREATED AT 22.22.24 00:00
+                    CREATED AT {{ formatTime(createdTime) }}
                 </div>
                 }
             </div>
@@ -72,7 +72,7 @@
                 <button mat-button (click)="onSubmit()">UPDATE</button>
                 <button mat-button class="text-danger" (click)="deleteSelf()">DELETE</button>
                 <div class="text-secondary">
-                    LAST UPDATE 22.22.24 00:00
+                    LAST UPDATE {{ formatTime(lastUpdateTime) }}
                 </div>
                 }
             </div>

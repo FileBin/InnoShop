@@ -16,6 +16,7 @@ export class ViewProductComponent {
       this.title = x?.title ?? '';
       this.desc = x?.description ?? '';
       this.price = x?.price ?? 0;
+      this.isEditable = x?.isEditable ?? false;
     });
   }
 

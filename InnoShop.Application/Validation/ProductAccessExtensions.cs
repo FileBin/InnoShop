@@ -1,4 +1,5 @@
 using InnoShop.Application.Shared.Exceptions;
+using InnoShop.Application.Shared.Models.Product;
 using InnoShop.Domain.Abstraction;
 using InnoShop.Domain.Enums;
 
@@ -13,6 +14,12 @@ public static class ProductAccessExtensions {
             return productsQuery;
         }
         return productsQuery.Where(product => product.Availability == AvailabilityStatus.Published);
+    }
+
+    public static ProductResultDto ToResult(this IProduct product, IUserDescriptor user) {
+        return new ProductResultDto(product) {
+            IsEditable = product.IsEditableByUser(user),
+        };
     }
 
     public static bool IsVisibleToUser(this IProduct product, IUserDescriptor user) {
