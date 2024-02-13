@@ -16,8 +16,18 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { ResendEmailComponent } from './resend-email/resend-email.component';
 import { SearchComponent } from './search/search.component';
+import { EditProductComponent } from './edit-product/edit-product.component';
 
-import {MatSliderModule} from '@angular/material/slider'; 
+import { MatSliderModule } from '@angular/material/slider';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { ProductPageComponent } from './product-page/product-page.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import {MatPaginatorModule} from '@angular/material/paginator'; 
 
 @NgModule({
   declarations: [
@@ -32,13 +42,25 @@ import {MatSliderModule} from '@angular/material/slider';
     ResetPasswordComponent,
     ResendEmailComponent,
     SearchComponent,
+    EditProductComponent,
+    ProductPageComponent,
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+
+    MatCardModule,
+    MatButtonModule,
     MatSliderModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSidenavModule,
+    MatPaginatorModule,
+
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'counter', component: CounterComponent },
@@ -47,6 +69,7 @@ import {MatSliderModule} from '@angular/material/slider';
       { path: 'forgot_password', component: ForgotPasswordComponent },
       { path: 'passwordreset', component: ResetPasswordComponent },
       { path: 'resend', component: ResendEmailComponent },
+      { path: 'product', component: ProductPageComponent },
     ])
   ],
   providers: [
@@ -55,7 +78,7 @@ import {MatSliderModule} from '@angular/material/slider';
       useClass: JwtInterceptor,
       multi: true,
     },
-    { provide: APP_ID,  useValue: 'serverApp' }
+    { provide: APP_ID, useValue: 'serverApp' }
   ],
   bootstrap: [AppComponent]
 })

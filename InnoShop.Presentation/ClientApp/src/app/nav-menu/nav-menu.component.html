@@ -7,12 +7,20 @@
             InnoShop
           </a>
         </div>
+        <div>
+          <a class="nav-link" *ngIf="loggedIn()" [routerLink]="['/product']" [queryParams]="{ action: 'create' }">
+            CreateProduct
+          </a>
+        </div>
       </div>
 
       <form class="d-flex flex-row form-inline my-2 my-lg-0 gap-2">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit" (click)="toggleFilters()"><i class="bi bi-funnel"></i></button>
+        <input [formControl]="searchLine" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit" (click)="search()">Search</button>
+        @if (showFilters) {
+        <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit" (click)="toggleFilters()"><i
+            class="bi bi-funnel"></i></button>
+        }
       </form>
       <div>
         <app-user-info *ngIf="loggedIn()"></app-user-info>

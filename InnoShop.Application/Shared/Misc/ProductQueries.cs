@@ -40,7 +40,7 @@ public static class ProductQueries {
         var products = db
             .AsNoTracking();
 
-        products.FilterSearch(user);
+        products = products.FilterSearch(user);
 
         if (priceFrom is not null) {
             products = products.Where(product
@@ -73,20 +73,20 @@ public static class ProductQueries {
             products = products.Reverse();
         }
 
-        var count = products.CountAsync();
+        var count = await products.CountAsync();
 
         var skip = searchQuery.From;
         var take = searchQuery.To - searchQuery.From + 1;
 
         products = products.Skip(skip).Take(take);
 
-        var page = products
+        var page = await products
             .ToListAsync(cancellationToken);
 
 
         return new SearchResultDto {
-            Products = await page,
-            QueryCount = await count,
+            Products = page,
+            QueryCount = count,
         };
     }
 }
