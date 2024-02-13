@@ -24,6 +24,11 @@ class TestMailService : IConfirmationMailService {
     }
 
     public async Task SendConfirmationEmailAsync(string userEmail, string userId, string confirmationLink) {
+        var idx = confirmationLink.IndexOf("://") + 4;
+        idx = confirmationLink.IndexOf('/', idx);
+
+        confirmationLink = confirmationLink[idx..];
+
         await SendEmailAsync(
            destination: userEmail,
            subject: "InnoShop email confirmation",

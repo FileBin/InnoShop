@@ -3,10 +3,11 @@
 using InnoShop.Application.Validation;
 using InnoShop.Application.Shared.Misc;
 using InnoShop.Domain.Abstraction;
+using InnoShop.Application.Shared.Models.Product;
 
 namespace InnoShop.Application.Shared.Commands.Products;
 
-public class SearchProductsCommand : SearchQueryDto, ICommand<IEnumerable<string>> {
+public class SearchProductsCommand : SearchQueryDto, ICommand<SearchResultDto> {
     public SearchProductsCommand(SearchQueryDto other) : base(other) { }
 
     public required IUserDescriptor UserDesc { get; set; }
@@ -37,10 +38,9 @@ public sealed class SearchProductsValidator : AbstractValidator<SearchProductsCo
 }
 
 public class SearchProductsCommandHandler(IProductDbContext context)
- : IProductCommandHandler<SearchProductsCommand, IEnumerable<string>> {
-    public async Task<IEnumerable<string>> Handle(SearchProductsCommand request, CancellationToken cancellationToken) {
-        var guids = await context.Products.SearchProductsIds(request, request.UserDesc, cancellationToken);
-        return guids.Select(id => id.ToString());
+ : IProductCommandHandler<SearchProductsCommand, SearchResultDto> {
+    public async Task<SearchResultDto> Handle(SearchProductsCommand request, CancellationToken cancellationToken) {
+        return await context.Products.SearchProducts(request, request.UserDesc, cancellationToken);
     }
 }
 
