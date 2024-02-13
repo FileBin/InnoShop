@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { APP_ID, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
@@ -34,7 +34,7 @@ import {MatSliderModule} from '@angular/material/slider';
     SearchComponent,
   ],
   imports: [
-    BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
+    BrowserModule,
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
@@ -54,7 +54,8 @@ import {MatSliderModule} from '@angular/material/slider';
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,
       multi: true,
-    }
+    },
+    { provide: APP_ID,  useValue: 'serverApp' }
   ],
   bootstrap: [AppComponent]
 })
