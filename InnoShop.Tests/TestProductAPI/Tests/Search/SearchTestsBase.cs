@@ -87,7 +87,7 @@ class SearchTestsBase : SetupProductAuth {
         Assert.That(result.IsSuccessStatusCode, Is.False);
     }
 
-    private record SearchTestResult(Product[] actual, Product[] etalon);
+    private record SearchTestResult(ProductResultDto[] actual, Product[] etalon);
 
     private async Task<SearchTestResult> SearchTest(SearchQueryDto query) {
         var searchDbTask = SearchProducts(query);
