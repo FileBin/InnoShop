@@ -10,19 +10,7 @@ namespace InnoShop.Infrastructure.UserManagerAPI.Controllers;
 [ApiController]
 [Route("api/accounts", Name = nameof(AccountsController))]
 [Authorize]
-public class AccountsController : ControllerBase {
-    private readonly IMediator mediator;
-
-    private LinkGenerator ConfirmLinkGenerator {
-        get => new LinkGenerator {
-            ActionName = nameof(ConfirmEmailAsync),
-            Url = Url,
-        };
-    }
-
-    public AccountsController(IMediator mediator) {
-        this.mediator = mediator;
-    }
+public class AccountsController(IMediator mediator, IConfiguration config) : ControllerBase {
 
     [HttpPost]
     [Route("login", Name = nameof(Login))]
@@ -42,9 +30,7 @@ public class AccountsController : ControllerBase {
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto,
                                               CancellationToken cancellationToken) {
-        var command = new RegisterUserCommand(dto) {
-            ConfirmLinkGenerator = ConfirmLinkGenerator,
-        };
+        var command = new RegisterUserCommand(dto) {};
 
         await mediator.Send(command, cancellationToken);
 
@@ -64,6 +50,11 @@ public class AccountsController : ControllerBase {
 
         await mediator.Send(command, cancellationToken);
 
+        var loginRoute = config["LoginRoute"];
+
+        if (loginRoute is not null)
+            return Redirect(loginRoute);
+
         return Ok();
     }
 
@@ -74,7 +65,6 @@ public class AccountsController : ControllerBase {
                                                  CancellationToken cancellationToken) {
         var command = new ResendEmailCommand() {
             UserEmail = userEmail,
-            ConfirmLinkGenerator = ConfirmLinkGenerator,
         };
 
         await mediator.Send(command, cancellationToken);

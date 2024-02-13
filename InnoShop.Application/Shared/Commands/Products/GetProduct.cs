@@ -1,11 +1,12 @@
 using InnoShop.Application.Shared.Interfaces;
 using InnoShop.Application.Shared.Misc;
+using InnoShop.Application.Shared.Models.Product;
 using InnoShop.Domain.Abstraction;
 using InnoShop.Domain.Entities;
 
 namespace InnoShop.Application.Shared.Commands.Products;
 
-public class GetProductCommand : ICommand<Product> {
+public class GetProductCommand : ICommand<ProductResultDto> {
 
     public required IUserDescriptor UserDesc { get; set; }
 
@@ -20,12 +21,12 @@ public sealed class GetProductValidator : AbstractValidator<GetProductCommand> {
 }
 
 public class GetProductCommandHandler(IProductDbContext context)
- : IProductCommandHandler<GetProductCommand, Product> {
-    public async Task<Product> Handle(GetProductCommand request, CancellationToken cancellationToken) {
+ : IProductCommandHandler<GetProductCommand, ProductResultDto> {
+    public async Task<ProductResultDto> Handle(GetProductCommand request, CancellationToken cancellationToken) {
         var product = await context.Products.GetProductById(request.ProductId, cancellationToken);
 
         product.ValidateVisibility(request.UserDesc);
-
-        return product;
+        
+        return product.ToResult(request.UserDesc);
     }
 }

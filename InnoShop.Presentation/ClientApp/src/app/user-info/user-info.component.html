@@ -1,0 +1,36 @@
+<div class="d-sm-inline-flex justify-content-end me-0">
+    <div class="flex-grow">
+        <button class="btn" type="button" (click)="toggle()">
+            <i class="bi bi-person h4"></i>
+        </button>
+        <div class="user-content d-flex flex-column" *ngIf="isExpanded">
+            <span *ngIf="user === null">
+                Loading...
+            </span>
+            <div *ngIf="user !== null" class="grid">
+                <div class="col">
+                    <h4>
+                        <i class="bi bi-person-circle me-3"></i>
+                    </h4>
+                </div>
+
+                <div class="col">
+                    <span>{{ user.username }}</span>
+                </div>
+
+                <div class="col">
+                    <h4>
+                        <i class="bi bi-envelope-at-fill me-3"></i>
+                    </h4>
+                </div>
+
+                <div class="col">
+                    <span>{{ user.email }}</span>
+                </div>
+            </div>
+            <button class="btn btn-primary" type="button" (click)="logout()">
+                Logout
+            </button>
+        </div>
+    </div>
+</div>

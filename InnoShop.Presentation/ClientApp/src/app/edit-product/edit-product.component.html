@@ -1,0 +1,81 @@
+<div class="container vertical-center">
+    <mat-card class="field">
+        <mat-card-header>
+            <div class="d-flex flex-row justify-content-between container align-items-center">
+                <mat-card-title> @if (isCreated$|async) {Edit} @else {Create} Product </mat-card-title>
+
+                @if (isCreated$ | async) {
+                <div class="text-secondary">
+                    CREATED AT {{ formatTime(createdTime) }}
+                </div>
+                }
+            </div>
+        </mat-card-header>
+
+
+        @if (isCreated$ | async) {
+        <mat-form-field>
+            <mat-label>Availability</mat-label>
+            <mat-select [formControl]="f.availability">
+
+                <mat-option value="Draft">Draft</mat-option>
+                <mat-option value="Published">Published</mat-option>
+                <mat-option value="Sold">Sold</mat-option>
+
+            </mat-select>
+        </mat-form-field>
+        }
+
+        <mat-form-field>
+            <mat-label>Product name</mat-label>
+            <input [formControl]="f.title" [errorStateMatcher]="matcher" matInput placeholder="Title">
+            <mat-hint align="end">{{f.title.value?.length ?? 0}} / {{TITLE_MAX}}</mat-hint>
+            @if (f.title.hasError('minlength') || f.title.hasError('required')) {
+            <mat-error>Title must contain at least 3 characters</mat-error>
+            }
+
+            @if (f.title.hasError('maxlength')) {
+            <mat-error>Too much characters</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Product description</mat-label>
+            <textarea [formControl]="f.desc" [errorStateMatcher]="matcher" matInput
+                placeholder="Description"></textarea>
+            <mat-hint align="end">{{f.desc.value?.length ?? 0}} / {{DESC_MAX}}</mat-hint>
+
+            @if (f.desc.hasError('maxlength')) {
+            <mat-error>Too much characters</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Product price</mat-label>
+            <span matTextPrefix>$&nbsp;</span>
+            <input [formControl]="f.price" [errorStateMatcher]="matcher" type="number" step="0.01" matInput
+                placeholder="0.00">
+
+            @if (f.price.errors) {
+            <mat-error>Please enter valid price</mat-error>
+            }
+        </mat-form-field>
+
+        <pre *ngIf="message.length > 0" class="mb-3 mt-3">{{ message }}</pre>
+
+        <mat-card-actions>
+            <div class="d-flex flex-row justify-content-between container align-items-center">
+                @if (!(isCreated$ | async)) {
+                <button mat-button (click)="onSubmit()">CREATE</button>
+                } @else {
+                <button mat-button (click)="navigateView()">VIEW</button>
+                <button mat-button (click)="onSubmit()">UPDATE</button>
+                <button mat-button class="text-danger" (click)="deleteSelf()">DELETE</button>
+                <div class="text-secondary">
+                    LAST UPDATE {{ formatTime(lastUpdateTime) }}
+                </div>
+                }
+            </div>
+        </mat-card-actions>
+    </mat-card>
+</div>

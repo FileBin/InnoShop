@@ -97,14 +97,9 @@ class SearchTestsBase : SetupProductAuth {
         var result = await searchDbTask;
         Assert.That(result.IsSuccessStatusCode, Is.True);
 
-        var dbList = await GetJsonContent<string[]>(result);
+        var actual = await GetJsonContent<SearchResultDto>(result);
 
-        var actualProducts = dbList
-            .Select(id => testProducts.First(p => p.Id.ToString() == id))
-            .ToArray();
-
-        return new SearchTestResult(actualProducts, etalon);
-
+        return new SearchTestResult(actual.Products.ToArray(), etalon);
     }
 
     public static IEnumerable<Product> SearchEtalon(IEnumerable<Product> products, SearchQueryDto query) {

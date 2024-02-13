@@ -1,0 +1,8 @@
+@if(isLoggedIn()) {
+    @if(isView) {
+        <app-view-product *ngIf="isLoaded$ | async"></app-view-product>
+    } @else {
+        <app-edit-product *ngIf="isLoaded$ | async" (update)="update()"></app-edit-product>
+    }
+
+}

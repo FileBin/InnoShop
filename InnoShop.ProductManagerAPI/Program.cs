@@ -56,8 +56,8 @@ public class Program {
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-
-        app.UseHttpsRedirection();
+        //FIXME: i don't have trusted certs so just fox example https will be disabled
+        //app.UseHttpsRedirection();
         app.AddApplicationLayers();
 
         app.UseAuthentication();

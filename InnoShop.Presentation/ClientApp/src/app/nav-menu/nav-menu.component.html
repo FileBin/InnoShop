@@ -1,41 +1,42 @@
 <header>
-  <nav
-    class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3"
-  >
-    <div class="container">
-      <a class="navbar-brand" [routerLink]="['/']">InnoShop.Presentation</a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target=".navbar-collapse"
-        aria-label="Toggle navigation"
-        [attr.aria-expanded]="isExpanded"
-        (click)="toggle()"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div
-        class="navbar-collapse collapse d-sm-inline-flex justify-content-end"
-        [ngClass]="{ show: isExpanded }"
-      >
-        <ul class="navbar-nav flex-grow">
-          <li
-            class="nav-item"
-            [routerLinkActive]="['link-active']"
-            [routerLinkActiveOptions]="{ exact: true }"
-          >
-            <a class="nav-link text-dark" [routerLink]="['/']">Home</a>
-          </li>
+  <nav class="bg-white border-bottom box-shadow p-2">
+    <div class="container-fluid d-flex flex-row justify-content-between align-items-center">
+      <div class="d-flex flex-row align-items-center gap-5">
+        <div>
+          <a class="navbar-brand" [routerLink]="['/']">
+            InnoShop
+          </a>
+        </div>
+        <div>
+          <a class="nav-link" *ngIf="loggedIn()" [routerLink]="['/product']" [queryParams]="{ action: 'create' }">
+            CreateProduct
+          </a>
+        </div>
+      </div>
+
+      <form class="d-flex flex-row form-inline my-2 my-lg-0 gap-2">
+        <input [formControl]="searchLine" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit" (click)="search()">Search</button>
+        @if (showFilters) {
+        <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit" (click)="toggleFilters()"><i
+            class="bi bi-funnel"></i></button>
+        }
+      </form>
+      <div>
+        <app-user-info *ngIf="loggedIn()"></app-user-info>
+      </div>
+      <div *ngIf="!loggedIn()">
+        <ul class="navbar-nav d-flex flex-row gap-3">
           <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/counter']"
-              >Counter</a
-            >
+            <a class="nav-link text-dark" [routerLink]="['/login']">
+              Login
+            </a>
           </li>
+
           <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/fetch-data']"
-              >Fetch data</a
-            >
+            <a class="nav-link text-dark" [routerLink]="['/register']">
+              Register
+            </a>
           </li>
         </ul>
       </div>

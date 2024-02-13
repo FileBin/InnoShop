@@ -1,0 +1,50 @@
+<div class="card form-card">
+    <h4 class="card-header">Login</h4>
+    <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+                <label class="form-label">Login</label>
+                <input type="text" formControlName="login" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f.login.errors }" />
+                <div *ngIf="submitted && f.login.errors" class="invalid-feedback">
+                    <div *ngIf="f.login.errors?.['required']">Login is required</div>
+                    <div *ngIf="f.login.errors?.['minlength']">
+                        Login must be at least 3 characters long.
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" formControlName="password" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
+                <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+                    <div *ngIf="f.password.errors['required']">Password is required</div>
+                    <div *ngIf="f.password.errors?.['minlength']">
+                        Password must be at least 8 characters long.
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-column">
+
+                <div class="ms-auto">
+                    <a class="btn btn-link" [routerLink]="['/forgot_password']">Forgot password?</a>
+                </div>
+
+                <div class="d-flex flex-row">
+                    <button [disabled]="loading" class="btn btn-primary">
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
+                        Login
+                    </button>
+                    <div>
+                        <a class="btn btn-link" [routerLink]="['/register']">Register</a>
+                    </div>
+
+                    <div class="ms-auto">
+                        <a class="btn btn-link" [routerLink]="['/resend']">Verify email</a>
+                    </div>
+                </div>
+            </div>
+            <pre *ngIf="message.length > 0" class="mb-3 mt-3">{{ message }}</pre>
+        </form>
+    </div>
+</div>

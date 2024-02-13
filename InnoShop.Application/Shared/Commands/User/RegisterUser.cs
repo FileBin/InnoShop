@@ -9,13 +9,10 @@ namespace InnoShop.Application.Shared.Commands.User;
 
 public class RegisterUserCommand : RegisterDto, ICommand {
     public RegisterUserCommand(RegisterDto other) : base(other) {}
-
-    public required LinkGenerator ConfirmLinkGenerator { get; init; }
 }
 
 public sealed class RegisterUserValidator : AbstractValidator<RegisterUserCommand> {
     public RegisterUserValidator() {
-        RuleFor(x => x.ConfirmLinkGenerator).NotNull();
         RuleFor(x => x.Email).EmailValidation();
         RuleFor(x => x.Username).UsernameValidation();
         RuleFor(x => x.Password).PasswordValidation();
@@ -45,7 +42,6 @@ public class RegisterUserHandler : IUserCommandHandler<RegisterUserCommand> {
         ArgumentNullException.ThrowIfNull(newUser);
 
         _ = mediator.Send(new SendConfirmationEmailCommand{
-            ConfirmLinkGenerator = request.ConfirmLinkGenerator,
             User = newUser,
         });
     }

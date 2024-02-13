@@ -7,7 +7,6 @@ namespace InnoShop.Infrastructure.ProductManagerAPI.Data;
 public class ApplicationDbContext : DbContext, IProductDbContext {
     public DbSet<Product> Products {
         get {
-            SavingTask?.Wait(30_000);
             return Set<Product>();
         }
     }
@@ -24,8 +23,6 @@ public class ApplicationDbContext : DbContext, IProductDbContext {
     }
 
     public void TriggerSave() {
-        if (SavingTask?.IsCompleted ?? true) {
-            SavingTask = SaveChangesAsync();
-        }
+        SaveChangesAsync().Wait();
     }
 }

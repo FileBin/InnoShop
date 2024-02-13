@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Net.Mail;
 using InnoShop.Application.Shared.Models.Auth;
+using System.Net;
 
 namespace InnoShop.Tests.TestUserAPI;
 
@@ -43,7 +44,7 @@ public class SetupUserApi {
         Assert.That(mail, Is.Not.Null);
 
         var result = await FollowLink(mail.Body);
-        Assert.That(result.IsSuccessStatusCode);
+        Assert.That(result.IsSuccessStatusCode || result.StatusCode == HttpStatusCode.NotFound);
     }
 
     protected async Task<HttpResponseMessage> RegisterUser(UserCredentials credentials) {

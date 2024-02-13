@@ -17,6 +17,14 @@ public static class ConfigureServices {
     public static IServiceCollection AddApplicationServices<T>(this IServiceCollection services, IConfiguration config)
     where T : ICommandHandler {
 
+        //FIXME: allow all hosts just for example 
+        services.AddCors(options => {
+            options.AddPolicy(name: "any",
+                              policy => {
+                                  policy.AllowAnyHeader();
+                              });
+        });
+
         services.AddProblemDetails(options =>
             options.CustomizeProblemDetails = ctx => {
                 var ext = ctx.ProblemDetails.Extensions;
@@ -112,6 +120,8 @@ public static class ConfigureServices {
     }
 
     public static IApplicationBuilder AddApplicationLayers(this IApplicationBuilder builder) {
+        //FIXME: allow all hosts just for example 
+        builder.UseCors("any");
         builder.UseExceptionHandler();
         builder.UseStatusCodePages();
         return builder;

@@ -1,0 +1,37 @@
+<div class="container vertical-center">
+    <mat-card class="field">
+        <mat-card-header>
+            <h1 class="h3">
+                {{ title }}
+            </h1>
+        </mat-card-header>
+
+        <div class="grey product">
+            <div class="grid">
+                <div class="container-fluid text-end">
+                    Price:
+                </div>
+                <div>
+                    ${{ price }}
+                </div>
+            </div>
+            <hr>
+            <div class="grid">
+                <div class="container-fluid text-end">
+                    Description:
+                </div>
+                <div>
+                    {{ desc }}
+                </div>
+            </div>
+        </div>
+
+        <mat-card-actions>
+            <div class="d-flex flex-row justify-content-between container align-items-center">
+                @if (isEditable) {
+                <button mat-button (click)="navigateEdit()">EDIT</button>
+                }
+            </div>
+        </mat-card-actions>
+    </mat-card>
+</div>

@@ -1,4 +1,5 @@
 using InnoShop.Application.Shared.Exceptions;
+using InnoShop.Application.Shared.Models.Product;
 using InnoShop.Domain.Abstraction;
 using InnoShop.Domain.Entities;
 using InnoShop.Domain.Enums;
@@ -27,7 +28,7 @@ public static class ProductQueries {
         return product;
     }
 
-    public static async Task<IEnumerable<Guid>> SearchProductsIds(this DbSet<Product> db,
+    public static async Task<SearchResultDto> SearchProducts(this DbSet<Product> db,
                                                  ISearchQuery searchQuery,
                                                  IUserDescriptor user,
                                                  CancellationToken cancellationToken = default) {
@@ -39,7 +40,7 @@ public static class ProductQueries {
         var products = db
             .AsNoTracking();
 
-        products.FilterSearch(user);
+        products = products.FilterSearch(user);
 
         if (priceFrom is not null) {
             products = products.Where(product
@@ -72,13 +73,20 @@ public static class ProductQueries {
             products = products.Reverse();
         }
 
+        var count = await products.CountAsync();
+
         var skip = searchQuery.From;
         var take = searchQuery.To - searchQuery.From + 1;
 
         products = products.Skip(skip).Take(take);
 
-        return await products
-            .Select(product => product.Id)
+        var page = await products
             .ToListAsync(cancellationToken);
+
+
+        return new SearchResultDto {
+            Products = page.Select(x => x.ToResult(user)).ToArray(),
+            QueryCount = count,
+        };
     }
 }
