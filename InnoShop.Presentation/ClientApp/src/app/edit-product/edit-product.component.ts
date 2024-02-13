@@ -49,7 +49,7 @@ export class EditProductComponent {
   }
 
   init(product: Product | null) {
-    let status = product?.status ?? AvailabilityStatus.Draft;
+    let status = product?.availability ?? AvailabilityStatus.Draft;
     let title = product?.title ?? '';
     let desc = product?.description ?? '';
     let price = product?.price ?? 0;
@@ -107,7 +107,7 @@ export class EditProductComponent {
 
       updateDto.status = this.f.availability.value ?? undefined;
 
-      event = this.productApi.update(prevState!.id, dto);
+      event = this.productApi.update(prevState!.id, updateDto);
     }
     event?.subscribe({
       error: (err: HttpErrorResponse) => {
@@ -133,6 +133,27 @@ export class EditProductComponent {
       }
     })
       .add(() => this.loading = false);
+  }
+
+  navigateView() {
+    this.router.navigate(
+      [],
+      {
+        relativeTo: this.activatedRoute,
+        queryParams: { action: '' },
+        queryParamsHandling: 'merge',
+      }
+    );
+  }
+  deleteSelf() {
+    let product = this.product.state$.value;
+    if (product !== null) {
+      this.productApi.delete(product.id).subscribe({
+        complete: () => {
+          this.router.navigate(['/']);
+        }
+      });
+    }
   }
 }
 

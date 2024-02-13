@@ -1,0 +1,15 @@
+.grid {
+    padding: 0 0.5em;
+    gap: 2em;
+    display: grid;
+    grid-template-columns: 120px auto;
+}
+
+.grey {
+    background-color: #99999913;
+}
+
+.product {
+    padding: 1em;
+    margin: 1em 0;
+}

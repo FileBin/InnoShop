@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Product, ProductApiProxyService } from '../services/product-api-proxy.service';
 import { AuthStateProviderService } from '../services/auth-state-provider.service';
@@ -20,16 +20,16 @@ export class ProductPageComponent {
     private authStateProvider: AuthStateProviderService,
     private productApi: ProductApiProxyService,
     private product: ProductStateService) {
-
     this.route.queryParams.subscribe(params => {
+      this.isView = true;
       var action = params['action'];
       if (action == 'create') {
         this.isView = false;
-        product.state$.next(null);
+        this.product.state$.next(null);
         this.isLoaded$.next(true);
         return;
       }
-      
+
       var id = params['id'];
       if (action == 'edit') {
         this.isView = false;

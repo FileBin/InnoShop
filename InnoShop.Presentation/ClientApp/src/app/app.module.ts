@@ -28,6 +28,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import {MatPaginatorModule} from '@angular/material/paginator'; 
+import { ViewProductComponent } from './view-product/view-product.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     ResendEmailComponent,
     SearchComponent,
     EditProductComponent,
+    ViewProductComponent,
     ProductPageComponent,
   ],
   imports: [

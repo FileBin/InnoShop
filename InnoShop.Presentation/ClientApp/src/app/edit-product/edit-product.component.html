@@ -18,9 +18,9 @@
             <mat-label>Availability</mat-label>
             <mat-select [formControl]="f.availability">
 
-                <mat-option value="draft">Draft</mat-option>
-                <mat-option value="published">Published</mat-option>
-                <mat-option value="sold">Sold</mat-option>
+                <mat-option value="Draft">Draft</mat-option>
+                <mat-option value="Published">Published</mat-option>
+                <mat-option value="Sold">Sold</mat-option>
 
             </mat-select>
         </mat-form-field>
@@ -68,8 +68,9 @@
                 @if (!(isCreated$ | async)) {
                 <button mat-button (click)="onSubmit()">CREATE</button>
                 } @else {
+                <button mat-button (click)="navigateView()">VIEW</button>
                 <button mat-button (click)="onSubmit()">UPDATE</button>
-
+                <button mat-button class="text-danger" (click)="deleteSelf()">DELETE</button>
                 <div class="text-secondary">
                     LAST UPDATE 22.22.24 00:00
                 </div>

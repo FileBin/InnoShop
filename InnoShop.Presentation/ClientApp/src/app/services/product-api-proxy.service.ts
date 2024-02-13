@@ -63,7 +63,7 @@ export interface UpdateProductDto {
 export interface Product extends CreateProductDto {
   id: string;
   userId: string;
-  status: AvailabilityStatus;
+  availability: AvailabilityStatus;
   creationTimestamp: string;
   lastUpdateTimestamp: string;
 }
