@@ -61,11 +61,20 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "optimization": {
+                "styles": {
+                  "inlineCritical": false
+                }
+              }
             },
             "development": {
               "buildOptimizer": false,
-              "optimization": false,
+              "optimization": {
+                "styles": {
+                  "inlineCritical": false
+                }
+              },
               "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
@@ -78,11 +87,11 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "InnoShop.Presentation:build:production"
+              "buildTarget": "InnoShop.Presentation:build:production"
             },
             "development": {
-              "browserTarget": "InnoShop.Presentation:build:development",
-              "proxyConfig": "proxy.conf.js"
+              "proxyConfig": "proxy.conf.js",
+              "buildTarget": "InnoShop.Presentation:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -90,7 +99,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "InnoShop.Presentation:build"
+            "buildTarget": "InnoShop.Presentation:build"
           }
         },
         "test": {
@@ -114,7 +123,7 @@
           "options": {
             "outputPath": "dist-server",
             "main": "src/main.ts",
-            "tsConfig": "tsconfig.server.json"
+            "tsConfig": "tsconfig.json"
           },
           "configurations": {
             "dev": {

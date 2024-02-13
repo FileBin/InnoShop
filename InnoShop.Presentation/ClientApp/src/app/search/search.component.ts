@@ -11,7 +11,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class SearchComponent {
   expandSidebar = false;
   numbers: number[] = []
-  constructor(private state: GlobalStateService, private sanitizer: DomSanitizer) {
+  constructor(private state: GlobalStateService) {
     this.numbers = Array(24).fill(0).map((x,i)=>i+1);
 
     state.filterExpand$.subscribe({
