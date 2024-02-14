@@ -30,8 +30,6 @@ The solution contains projects:
 
 This project needs some security keys to be set up so I wrote simple bash script to generate all necessary data for project
 
-> NOTE: If you using windows
-
 To run setup script just execute 
 
 On linux in bash
