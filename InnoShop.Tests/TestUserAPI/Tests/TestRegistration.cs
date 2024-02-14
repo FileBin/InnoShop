@@ -20,7 +20,7 @@ public class TestRegistration : SetupUserApi {
             .Aggregate((x, y) => $"{x}{y}");
 
     [Test]
-    public async Task ValidParamenters() {
+    public async Task ValidParameters() {
         var userCredentials = validCredentials;
 
         var result = await RegisterUser(userCredentials);

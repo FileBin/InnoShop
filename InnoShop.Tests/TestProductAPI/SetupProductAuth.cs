@@ -28,6 +28,6 @@ class SetupProductAuth : SetupProductApi {
 
         var loginResult = await GetJsonContent<LoginResultDto>(result);
         
-        SetJwtToken(loginResult.Token);
+        SetJwtToken(loginResult.AccessToken);
     }
 }

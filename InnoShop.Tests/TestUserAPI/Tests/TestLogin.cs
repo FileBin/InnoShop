@@ -1,4 +1,6 @@
-﻿namespace InnoShop.Tests.TestUserAPI.Tests;
+﻿using InnoShop.Application.Shared.Models.Auth;
+
+namespace InnoShop.Tests.TestUserAPI.Tests;
 
 [TestFixture]
 public class TestLogin : SetupUserApi {
@@ -20,9 +22,22 @@ public class TestLogin : SetupUserApi {
 
     [Test]
     [CancelAfter(10_000)]
-    public async Task ValidParamenters(CancellationToken cancellationToken) {
+    public async Task ValidParameters(CancellationToken cancellationToken) {
         await VerifyEmail(cancellationToken);
         var result = await LoginUser(userCredentials);
+        Assert.That(result.IsSuccessStatusCode);
+    }
+
+    [Test]
+    [CancelAfter(10_000)]
+    public async Task RefreshToken(CancellationToken cancellationToken) {
+        await VerifyEmail(cancellationToken);
+        var result = await LoginUser(userCredentials);
+        Assert.That(result.IsSuccessStatusCode);
+
+        var loginResult = await GetJsonContent<LoginResultDto>(result);
+
+        result = await RefreshToken(loginResult.RefreshToken);
         Assert.That(result.IsSuccessStatusCode);
     }
 

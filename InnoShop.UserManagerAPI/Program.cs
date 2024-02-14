@@ -57,7 +57,8 @@ public class Program {
 
         builder.Services.AddScoped<IConfirmationMailService, MailService>();
         builder.Services.AddScoped<IPasswordResetMailService, MailService>();
-
+        builder.Services.AddScoped<ITokenService, TokenService>();
+        
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment()) {

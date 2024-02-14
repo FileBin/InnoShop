@@ -1,5 +1,8 @@
-﻿namespace InnoShop.Application.Shared.Models.Auth;
+﻿using InnoShop.Domain.Abstraction;
 
-public class LoginResultDto {
-    public required string Token { get; set; }
+namespace InnoShop.Application.Shared.Models.Auth;
+
+public class LoginResultDto : ITokenPair {
+    public required string AccessToken { get; set; }
+    public required string RefreshToken { get; set; }
 }
