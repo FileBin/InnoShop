@@ -62,6 +62,16 @@ public class SetupUserApi {
         ));
     }
 
+        protected async Task<HttpResponseMessage> RefreshToken(string? jwtToken = null) {
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, "/api/accounts/refresh_token")) {
+            if (jwtToken is not null) {
+                requestMessage.Headers.Authorization =
+                    new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, jwtToken);
+            }
+            return await clientUserApi.SendAsync(requestMessage);
+        }
+    }
+
     protected async Task<HttpResponseMessage> GetUserInfo(string? jwtToken = null) {
         using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, "/api/accounts/info")) {
             if (jwtToken is not null) {

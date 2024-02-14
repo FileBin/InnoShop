@@ -7,17 +7,39 @@ export class AuthStateProviderService {
 
   constructor() { }
 
-  setToken(token: string) {
+  get access_token() {
+    return localStorage.getItem('access_token');
+  }
+
+  set access_token(token: string | null) {
+    if (token === null) {
+      this.removeTokens();
+      return;
+    }
+
     localStorage.setItem('access_token', token);
   }
 
+  get refresh_token() {
+    return localStorage.getItem('refresh_token');
+  }
 
-  removeToken() {
+  set refresh_token(token: string | null) {
+    if (token === null) {
+      this.removeTokens();
+      return;
+    }
+
+    localStorage.setItem('refresh_token', token);
+  }
+
+  removeTokens() {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
   }
 
   isAuthorized(): boolean {
-    if(localStorage.getItem('access_token')) {
+    if (this.refresh_token !== null) {
       return true;
     }
     return false;

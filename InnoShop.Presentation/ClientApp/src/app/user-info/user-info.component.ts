@@ -28,6 +28,6 @@ export class UserInfoComponent {
   }
 
   logout() {
-    this.provider.removeToken();
+    this.provider.removeTokens();
   }
 }

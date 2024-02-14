@@ -11,38 +11,51 @@ export class UserApiProxyService {
 
   constructor(private http: HttpClient,
     @Inject('USER_API_URL') private userApiUrl: string,
-    private authStateProvider: AuthStateProviderService) { 
-      
-    }
+    private authStateProvider: AuthStateProviderService) {
 
-    login(dto: LoginDto) : Observable<void> {
-      return this.http.post<LoginResultDto>(`${this.userApiUrl}/login`, dto)
-        .pipe(
-          map(result => {
-            this.authStateProvider.setToken(result.token);
-          }),
-        );
-    }
+  }
 
-    register(dto: RegisterDto) : Observable<void> {
-      return this.http.post<void>(`${this.userApiUrl}/register`, dto);
-    }
+  login(dto: LoginDto): Observable<void> {
+    return this.http.post<LoginResultDto>(`${this.userApiUrl}/login`, dto)
+      .pipe(
+        map(result => {
+          this.authStateProvider.access_token = result.accessToken;
+          this.authStateProvider.refresh_token = result.refreshToken;
+        }),
+      );
+  }
 
-    forgotPassword(email: string) : Observable<void> {
-      return this.http.post<void>(`${this.userApiUrl}/forgot_password`, JSON.stringify(email), {headers: this.headers});
-    }
+  register(dto: RegisterDto): Observable<void> {
+    return this.http.post<void>(`${this.userApiUrl}/register`, dto);
+  }
 
-    resetPassword(email: ResetPasswordDto) : Observable<void> {
-      return this.http.post<void>(`${this.userApiUrl}/reset_password`, email);
-    }
+  forgotPassword(email: string): Observable<void> {
+    return this.http.post<void>(`${this.userApiUrl}/forgot_password`, JSON.stringify(email), { headers: this.headers });
+  }
 
-    userInfo() : Observable<UserInfoDto> {
-      return this.http.get<UserInfoDto>(`${this.userApiUrl}/info`);
-    }
+  resetPassword(email: ResetPasswordDto): Observable<void> {
+    return this.http.post<void>(`${this.userApiUrl}/reset_password`, email);
+  }
 
-    resend(email: string) : Observable<void> {
-      return this.http.post<void>(`${this.userApiUrl}/resend`, JSON.stringify(email), {headers: this.headers});
-    }
+  userInfo(): Observable<UserInfoDto> {
+    return this.http.get<UserInfoDto>(`${this.userApiUrl}/info`);
+  }
+
+  resend(email: string): Observable<void> {
+    return this.http.post<void>(`${this.userApiUrl}/resend`, JSON.stringify(email), { headers: this.headers });
+  }
+
+  refreshToken(): Observable<void> {
+    var headers = new HttpHeaders().set('Authorization', `Bearer ${this.authStateProvider.refresh_token}`);
+
+    return this.http.get<LoginResultDto>(`${this.userApiUrl}/refresh_token`, { headers: headers })
+      .pipe(
+        map(result => {
+          this.authStateProvider.access_token = result.accessToken;
+          this.authStateProvider.refresh_token = result.refreshToken;
+        }),
+      );
+  }
 }
 
 export interface RegisterDto {
@@ -57,7 +70,8 @@ export interface LoginDto {
 }
 
 export interface LoginResultDto {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
 }
 
 export interface ResetPasswordDto {

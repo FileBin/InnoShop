@@ -9,6 +9,7 @@ using InnoShop.Application.Validation;
 using InnoShop.Application.Shared.Interfaces;
 using InnoShop.Application.Shared.Exceptions;
 using InnoShop.Domain.Entities.Roles;
+using InnoShop.Domain.Services;
 
 namespace InnoShop.Application.Shared.Commands.User;
 
@@ -23,23 +24,12 @@ public sealed class LoginUserValidator : AbstractValidator<LoginUserCommand> {
     }
 }
 
-public class LoginUserHandler : IUserCommandHandler<LoginUserCommand, LoginResultDto> {
-    private readonly UserManager<ShopUser> userManager;
-    private readonly SignInManager<ShopUser> signInManager;
-    private readonly RoleManager<ShopRole> roleManager;
-    private readonly IConfiguration config;
-    private readonly SymmetricSecurityKey jwtSecurityKey;
+public class LoginUserHandler(UserManager<ShopUser> userManager,
+                        SignInManager<ShopUser> signInManager,
+                        ITokenService tokenService) 
+                        
+                        : IUserCommandHandler<LoginUserCommand, LoginResultDto> {
 
-    public LoginUserHandler(UserManager<ShopUser> userManager,
-                            SignInManager<ShopUser> signInManager,
-                            RoleManager<ShopRole> roleManager,
-                            IConfiguration configuration) {
-        this.userManager = userManager;
-        this.signInManager = signInManager;
-        this.roleManager = roleManager;
-        config = configuration;
-        jwtSecurityKey = configuration.GetSecurityKey();
-    }
 
     public async Task<LoginResultDto> Handle(LoginUserCommand request, CancellationToken cancellationToken) {
         var user = await userManager.FindByNameAsync(request.Login);
@@ -56,27 +46,13 @@ public class LoginUserHandler : IUserCommandHandler<LoginUserCommand, LoginResul
             throw new BadRequestException("Username or password are invalid");
         }
 
-        var claims = new[] {
-            new Claim(ClaimTypes.Name, user.UserName ?? Util.NullMarker),
-            new Claim(ClaimTypes.NameIdentifier, user.Id)
-        }.ToList();
+        
 
-        var roles = await userManager.GetRolesAsync(user);
-        claims.AddRange(roles.Select(x => new Claim(ClaimTypes.Role, x)));
+        var pair = await tokenService.GenerateTokenAsync(user);
 
-        var creds = new SigningCredentials(jwtSecurityKey, SecurityAlgorithms.HmacSha256);
-        var expiry = DateTime.Now.AddDays(Convert.ToInt32(config.GetOrThrow("JwtExpiryInDays")));
-
-        var token = new JwtSecurityToken(
-            config.GetOrThrow("JwtIssuer"),
-            config.GetOrThrow("JwtAudience"),
-            claims,
-            expires: expiry,
-            signingCredentials: creds
-        );
-
-        return new LoginResultDto() {
-            Token = new JwtSecurityTokenHandler().WriteToken(token),
+        return new LoginResultDto {
+            AccessToken = pair.AccessToken,
+            RefreshToken = pair.RefreshToken,
         };
     }
 }

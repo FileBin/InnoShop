@@ -21,7 +21,7 @@ public class AuthTest : SetupUserApi {
         Assert.That(result.IsSuccessStatusCode);
 
         var loginResult = await GetJsonContent<LoginResultDto>(result);
-        result = await GetUserInfo(loginResult.Token);
+        result = await GetUserInfo(loginResult.AccessToken);
         Assert.That(result.IsSuccessStatusCode);
 
         var userInfo = await GetJsonContent<UserInfoDto>(result);

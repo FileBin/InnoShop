@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using LinkGenerator = InnoShop.Application.Shared.Misc.LinkGenerator;
 using InnoShop.Application.Shared.Commands.User;
+using InnoShop.Application.Shared.Misc;
 
 namespace InnoShop.Infrastructure.UserManagerAPI.Controllers;
 
@@ -24,13 +25,25 @@ public class AccountsController(IMediator mediator, IConfiguration config) : Con
         return Ok(response);
     }
 
+    [HttpGet]
+    [Route("refresh_token")]
+    [Authorize]
+    public async Task<IActionResult> RefreshToken(CancellationToken cancellationToken) {
+        var command = new RefreshTokenCommand() {
+            UserDesc = new ClaimUserDescriptor() { User = User },
+        };
+
+        var response = await mediator.Send(command, cancellationToken);
+
+        return Ok(response);
+    }
 
     [HttpPost]
     [Route("register", Name = nameof(Register))]
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto,
                                               CancellationToken cancellationToken) {
-        var command = new RegisterUserCommand(dto) {};
+        var command = new RegisterUserCommand(dto) { };
 
         await mediator.Send(command, cancellationToken);
 
