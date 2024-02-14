@@ -26,7 +26,10 @@ services:
     environment:
       - Database__Host=db
     restart: unless-stopped
-
+    depends_on:
+      db:
+        condition: service_healthy
+  
   productapi:
     image: innoshop-product-api:0.0.1-alpha
     ports:
@@ -36,9 +39,15 @@ services:
     environment:
       - Database__Host=db
     restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
 
   website:
     image: innoshop-website:0.0.1-alpha
     ports:
       - '5000:5000'
     restart: unless-stopped
+    depends_on:
+    - productapi
+    - userapi

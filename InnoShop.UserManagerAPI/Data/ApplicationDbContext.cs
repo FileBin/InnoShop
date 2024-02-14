@@ -8,6 +8,5 @@ namespace InnoShop.Infrastructure.UserManagerAPI.Data;
 public class ApplicationDbContext : IdentityDbContext<ShopUser, ShopRole, string> {
     public ApplicationDbContext(DbContextOptions options) : base(options) {
         Database.EnsureCreated();
-        Database.Migrate();
     }
 }
