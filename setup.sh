@@ -46,6 +46,7 @@ if [ -z "$DB_ROOT_PASSWORD" ]; then
     read DB_ROOT_PASSWORD
     if [ -z "$DB_ROOT_PASSWORD" ]; then
         DB_ROOT_PASSWORD="$(gen_random_string 18)"
+        echo "DB_ROOT_PASSWORD is: $DB_ROOT_PASSWORD"
     fi
     echo "DB_ROOT_PASSWORD=\"$DB_ROOT_PASSWORD\"" >> "$CACHE_FILE"
 fi

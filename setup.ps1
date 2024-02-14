@@ -48,11 +48,12 @@ if (-not $env:SECURITY_KEY) {
 }
 
 if (-not $env:DB_ROOT_PASSWORD) {
-    $DB_ROOT_PASSWORD = Read-Host "Enter database root password [autogenerate]:"
-    if (-not $DB_ROOT_PASSWORD) {
-        $DB_ROOT_PASSWORD = gen_random_string 18
+    $env:DB_ROOT_PASSWORD = Read-Host "Enter database root password [autogenerate]:"
+    if (-not $env:DB_ROOT_PASSWORD) {
+        $env:DB_ROOT_PASSWORD = gen_random_string 18
+        Write-Output "DB_ROOT_PASSWORD password is: $env:DB_ROOT_PASSWORD"
     }
-    Add-Content -Path $CACHE_FILE -Value "DB_ROOT_PASSWORD=`"$DB_ROOT_PASSWORD`""
+    Add-Content -Path $CACHE_FILE -Value "DB_ROOT_PASSWORD=`"$env:DB_ROOT_PASSWORD`""
 }
 
 if (-not $env:DB_USER) {
@@ -64,21 +65,21 @@ if (-not $env:DB_USER) {
 }
 
 if (-not $env:DB_PASSWORD) {
-    $dbPassword = Read-Host "Enter database password [autogenerate]:"
-    if (-not $dbPassword) {
-        $dbPassword = gen_random_string 18
+    $env:DB_PASSWORD = Read-Host "Enter database password [autogenerate]:"
+    if (-not $env:DB_PASSWORD) {
+        $env:DB_PASSWORD = gen_random_string 18
     }
-    Add-Content -Path $CACHE_FILE -Value "DB_PASSWORD=`"$dbPassword`""
+    Add-Content -Path $CACHE_FILE -Value "DB_PASSWORD=`"$env:DB_PASSWORD`""
 }
 
 if (-not $env:SMTP_USER) {
-    $smtpUser = Read-Host "Enter SMTP user (or email):"
-    Add-Content -Path $CACHE_FILE -Value "SMTP_USER=`"$smtpUser`""
+    $env:SMTP_USER = Read-Host "Enter SMTP user (or email):"
+    Add-Content -Path $CACHE_FILE -Value "SMTP_USER=`"$env:SMTP_USER`""
 }
 
 if (-not $env:SMTP_PASSWORD) {
-    $smtpPassword = Read-Host "Enter SMTP user password:"
-    Add-Content -Path $CACHE_FILE -Value "SMTP_PASSWORD=`"$smtpPassword`""
+    $env:SMTP_PASSWORD = Read-Host "Enter SMTP user password:"
+    Add-Content -Path $CACHE_FILE -Value "SMTP_PASSWORD=`"$env:SMTP_PASSWORD`""
 }
 
 # Initialize same secrets for both projects
@@ -98,12 +99,12 @@ dotnet user-secrets init --project InnoShop.ProductManagerAPI --id $env:SECRETS_
 "@ | dotnet user-secrets set --id $env:SECRETS_ID
 
 @"
-Database__User="$DB_USER"
-Database__Password="$DB_PASSWORD"
-JwtSecurityKey="$SECURITY_KEY"
-SMTP__User="$SMTP_USER"
-SMTP__Password="$SMTP_PASSWORD"
-AdminDefaultPassword="$ADMIN_PASSWORD"
+Database__User="$env:DB_USER"
+Database__Password="$env:DB_PASSWORD"
+JwtSecurityKey="$env:SECURITY_KEY"
+SMTP__User="$env:SMTP_USER"
+SMTP__Password="$env:SMTP_PASSWORD"
+AdminDefaultPassword="$env:ADMIN_PASSWORD"
 "@ | Set-Content -Path $SECRETS_ENV
 
 # Write passwords into database.env file
