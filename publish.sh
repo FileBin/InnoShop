@@ -1,21 +1,17 @@
 #!/usr/bin/env bash
 
+set -e
+
 # change directory to script location
-BASE_DIR="${0%/*}"
+cd "${0%/*}"
 
-if [ ! -z "$BASE_DIR" ]; then
-
-cd "$BASE_DIR/InnoShop.Presentation"
+cd "InnoShop.Presentation"
 dotnet publish /t:PublishContainer -c Release
 
-cd "$BASE_DIR/InnoShop.UserManagerAPI"
+cd "../InnoShop.UserManagerAPI"
 dotnet publish /t:PublishContainer -c Release
 
-cd "$BASE_DIR/InnoShop.ProductManagerAPI"
+cd "../InnoShop.ProductManagerAPI"
 dotnet publish /t:PublishContainer -c Release
 
-else
-
-echo 'Script failed to execute because $BASE_DIR was empty'
-
-fi
+echo "PUBLISH DONE"

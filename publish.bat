@@ -1,15 +1,13 @@
 @echo off
 
-SET BASE_DIR="%~dp0"
-
-cd "%BASE_DIR%/InnoShop.Presentation"
+cd "InnoShop.Presentation"
 dotnet publish /t:PublishContainer -c "Release"
 
-cd "%BASE_DIR%/InnoShop.UserManagerAPI"
+cd "../InnoShop.UserManagerAPI"
 
 dotnet publish /t:PublishContainer -c "Release"
 
-cd "%BASE_DIR%/InnoShop.ProductManagerAPI"
+cd "../InnoShop.ProductManagerAPI"
 dotnet publish /t:PublishContainer -c "Release"
 
 echo "PUBLISH DONE"
