@@ -61,14 +61,16 @@ And input all necessary data (or use \[default\] option if available)
 
 ## 3. How to run:
 * ### From command line
-  To run application
+  To run application execute in terminal
+
   ```shell
-  dotnet run ./InnoShop.Presentation/InnoShop.Presentation.csproj
+  docker compose up
   ```
-  
-  Or for debugging purposes
+
+  Or 
+
   ```shell
-  dotnet watch ./InnoShop.Presentation/InnoShop.Presentation.csproj
+  docker compose up -d
   ```
 
 * ### Using VSCode (for devs)
