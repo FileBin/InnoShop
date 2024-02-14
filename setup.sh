@@ -11,10 +11,11 @@ if [ ! -d '.private' ]; then
     mkdir .private
 fi
 
-# get variables from cache file
+SECRETS_ENV='.private/secrets.env'
 DATABASE_FILE='.private/database.env'
 CACHE_FILE='.private/cache.sh'
 
+# get variables from cache file
 if [ -f "$CACHE_FILE" ]; then
     source "$CACHE_FILE"
 fi
@@ -95,9 +96,18 @@ cat <<EOF | dotnet user-secrets set --id "$SECRETS_ID"
 }
 EOF
 
+cat <<EOF | tee "$SECRETS_ENV"
+Database__User="$DB_USER"
+Database__Password="$DB_PASSWORD"
+JwtSecurityKey="$SECURITY_KEY"
+SMTP__User="$SMTP_USER"
+SMTP__Password="$SMTP_PASSWORD"
+AdminDefaultPassword="$ADMIN_PASSWORD"
+EOF
+
 # write same passwords into database.env file
 cat <<EOF | tee "$DATABASE_FILE"
-POSTGRES_PASSWORD=$DB_ROOT_PASSWORD
+POSTGRES_PASSWORD="$DB_ROOT_PASSWORD"
 EOF
 
 

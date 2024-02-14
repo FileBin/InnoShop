@@ -12,6 +12,7 @@ if (-not (Test-Path '.private')) {
     New-Item -ItemType Directory -Name '.private'
 }
 
+$SECRETS_ENV='.private\secrets.env'
 $DATABASE_FILE = '.private\database.env'
 $CACHE_FILE = '.private\cache.sh'
 
@@ -95,6 +96,15 @@ dotnet user-secrets init --project InnoShop.ProductManagerAPI --id $env:SECRETS_
   "AdminDefaultPassword": $env:ADMIN_PASSWORD
 }
 "@ | dotnet user-secrets set --id $env:SECRETS_ID
+
+@"
+Database__User="$DB_USER"
+Database__Password="$DB_PASSWORD"
+JwtSecurityKey="$SECURITY_KEY"
+SMTP__User="$SMTP_USER"
+SMTP__Password="$SMTP_PASSWORD"
+AdminDefaultPassword="$ADMIN_PASSWORD"
+"@ | Set-Content -Path $SECRETS_ENV
 
 # Write passwords into database.env file
 @"

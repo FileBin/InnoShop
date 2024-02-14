@@ -6,7 +6,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
     <UserSecretsId>83662ac2-9052-4921-a68e-3d377412bbd6</UserSecretsId>
+
+    <ContainerRepository>innoshop-product-api</ContainerRepository>
+    <ContainerImageTags>0.0.1-alpha;latest</ContainerImageTags>
+
+    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:8.0</ContainerBaseImage>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <ContainerEnvironmentVariable Include="ASPNETCORE_URLS" Value="http://0.0.0.0:8000" />
+    <ContainerPort Include="8000" Type="tcp" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
