@@ -73,5 +73,7 @@ And input all necessary data (or use \[default\] option if available)
   docker compose up -d
   ```
 
+  After site starts you can login as admin (login: admin, password is in file .private/cache.sh)
+
 * ### Using VSCode (for devs)
   In command pallette choose `Tasks: Run Task` and choose `Start All`
